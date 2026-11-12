@@ -1,0 +1,106 @@
+{
+ "frames": {
+  "police_helicopter_anim_0": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 192,
+    "h": 128
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 192,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 128
+   },
+   "duration": 63
+  },
+  "police_helicopter_anim_1": {
+   "frame": {
+    "x": 192,
+    "y": 0,
+    "w": 192,
+    "h": 128
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 192,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 128
+   },
+   "duration": 63
+  },
+  "police_helicopter_anim_2": {
+   "frame": {
+    "x": 384,
+    "y": 0,
+    "w": 192,
+    "h": 128
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 192,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 128
+   },
+   "duration": 63
+  },
+  "police_helicopter_anim_3": {
+   "frame": {
+    "x": 576,
+    "y": 0,
+    "w": 192,
+    "h": 128
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 192,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 128
+   },
+   "duration": 63
+  }
+ },
+ "meta": {
+  "app": "pxl",
+  "image": "police_helicopter_anim.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 768,
+   "h": 128
+  },
+  "scale": "1",
+  "frameTags": [
+   {
+    "name": "police_helicopter_anim",
+    "from": 0,
+    "to": 3,
+    "direction": "forward"
+   }
+  ]
+ }
+}

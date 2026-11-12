@@ -1,0 +1,106 @@
+{
+ "frames": {
+  "anim_headlights_0": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 128,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 128,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 128,
+    "h": 48
+   },
+   "duration": 167
+  },
+  "anim_headlights_1": {
+   "frame": {
+    "x": 128,
+    "y": 0,
+    "w": 128,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 128,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 128,
+    "h": 48
+   },
+   "duration": 167
+  },
+  "anim_headlights_2": {
+   "frame": {
+    "x": 256,
+    "y": 0,
+    "w": 128,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 128,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 128,
+    "h": 48
+   },
+   "duration": 167
+  },
+  "anim_headlights_3": {
+   "frame": {
+    "x": 384,
+    "y": 0,
+    "w": 128,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 128,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 128,
+    "h": 48
+   },
+   "duration": 167
+  }
+ },
+ "meta": {
+  "app": "pxl",
+  "image": "anim_headlights.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 512,
+   "h": 48
+  },
+  "scale": "1",
+  "frameTags": [
+   {
+    "name": "anim_headlights",
+    "from": 0,
+    "to": 3,
+    "direction": "forward"
+   }
+  ]
+ }
+}

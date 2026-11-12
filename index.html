@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#000000" />
+    <title>OPEN ROAD '87</title>
+    <style>
+      html, body { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; touch-action: none; overscroll-behavior: none; }
+      #game { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+      canvas { image-rendering: pixelated; image-rendering: crisp-edges; display: block; }
+      /* Phones held upright: ask for landscape (the game is landscape only). */
+      #rotate { display: none; position: fixed; inset: 0; z-index: 10; background: #05060f; color: #ffd23f; font: bold 22px "Courier New", monospace; align-items: center; justify-content: center; text-align: center; line-height: 1.6; }
+      @media (orientation: portrait) and (pointer: coarse) { #rotate { display: flex; } }
+    </style>
+  </head>
+  <body>
+    <div id="game"></div>
+    <div id="rotate">ROTATE YOUR DEVICE<br />TO LANDSCAPE</div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

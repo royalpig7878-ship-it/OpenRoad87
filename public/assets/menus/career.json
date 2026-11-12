@@ -1,0 +1,92 @@
+{
+  "garage_background": {
+    "file": "garage_background.png",
+    "size": [
+      960,
+      540
+    ],
+    "kind": "background",
+    "note": "floor y 342+; keep the car in the lit bay between the amber lines (x ~290-670, wheels ~y 470-500)"
+  },
+  "dealer_showroom": {
+    "file": "dealer_showroom.png",
+    "size": [
+      960,
+      540
+    ],
+    "kind": "background",
+    "note": "floor y 352+; car centred around x 480, wheels ~y 470"
+  },
+  "career_trophy_room": {
+    "file": "career_trophy_room.png",
+    "size": [
+      960,
+      540
+    ],
+    "kind": "background",
+    "note": "centre wall and rug left free for UI / featured trophy"
+  },
+  "garage_lift": {
+    "file": "garage_lift.png",
+    "size": [
+      384,
+      256
+    ],
+    "kind": "prop",
+    "note": "front arm pads top at y ~202; place a car side sprite so its sills rest there"
+  },
+  "garage_toolbox": {
+    "file": "garage_toolbox.png",
+    "size": [
+      128,
+      176
+    ],
+    "kind": "prop",
+    "anchor": "bottom centre (casters) at y 173"
+  },
+  "garage_workbench": {
+    "file": "garage_workbench.png",
+    "size": [
+      288,
+      160
+    ],
+    "kind": "prop",
+    "anchor": "feet at y 158"
+  },
+  "garage_mechanic": {
+    "file": "garage_mechanic.png",
+    "size": [
+      80,
+      144
+    ],
+    "kind": "character",
+    "anchor": "feet at y 136",
+    "height_px": 130
+  },
+  "dealer_salesman": {
+    "file": "dealer_salesman.png",
+    "size": [
+      80,
+      144
+    ],
+    "kind": "character",
+    "anchor": "feet at y 136",
+    "height_px": 130
+  },
+  "career_trophy": {
+    "file": "career_trophy.png",
+    "size": [
+      128,
+      176
+    ],
+    "kind": "icon/prop"
+  },
+  "career_medal": {
+    "file": "career_medal.png",
+    "size": [
+      96,
+      128
+    ],
+    "kind": "icon/prop"
+  }
+}

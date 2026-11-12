@@ -1,0 +1,575 @@
+{
+  "_note": "All coordinates in 960x540 space. Gauge sprites are per-cockpit faces (no needle) placed with origin 0.5,0.5 at the centre. Needle: gauge_needle.png pivots at (2,2) and points right at rotation 0. Wheel: static rim sprite placed centred at wheel.x/y; spoke/hub frames come from a spritesheet (frameWidth/Height, origin 0,0 at spokes.x/y); marker dot rides the rim ellipse.",
+  "wheel": {
+    "x": 481,
+    "y": 533,
+    "spokes": {
+      "x": 254,
+      "y": 348,
+      "frameWidth": 454,
+      "frameHeight": 272,
+      "degrees": [
+        -45,
+        -40,
+        -35,
+        -30,
+        -25,
+        -20,
+        -15,
+        -10,
+        -5,
+        0,
+        5,
+        10,
+        15,
+        20,
+        25,
+        30,
+        35,
+        40,
+        45
+      ]
+    },
+    "marker": {
+      "rx": 210.56,
+      "ry": 188,
+      "cx": 481,
+      "cy": 533,
+      "n": 2
+    }
+  },
+  "mirror": {
+    "x": 682,
+    "y": 58,
+    "w": 232,
+    "h": 40,
+    "glint": "mirror_glint"
+  },
+  "gauge_sweep_degrees": {
+    "rpm": [
+      135,
+      405
+    ],
+    "speedo": [
+      135,
+      405
+    ],
+    "fuel": [
+      210,
+      330
+    ],
+    "temp": [
+      210,
+      330
+    ],
+    "oil": [
+      210,
+      330
+    ],
+    "volts": [
+      210,
+      330
+    ],
+    "boost": [
+      180,
+      360
+    ]
+  },
+  "cockpits": {
+    "cockpit_vortex_gt": {
+      "markerColor": "#ff2a3a",
+      "thick": 0.12,
+      "wheel": {
+        "x": 481,
+        "y": 533,
+        "spokes": {
+          "x": 254,
+          "y": 348,
+          "frameWidth": 454,
+          "frameHeight": 272,
+          "degrees": [
+            -45,
+            -40,
+            -35,
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45
+          ]
+        },
+        "marker": {
+          "rx": 210.56,
+          "ry": 188,
+          "cx": 481,
+          "cy": 533,
+          "n": 2
+        }
+      },
+      "gauges": [
+        {
+          "kind": "volts",
+          "sprite": "gauge_vortex_gt_volts",
+          "x": 125,
+          "y": 425,
+          "radius": 36
+        },
+        {
+          "kind": "rpm",
+          "sprite": "gauge_vortex_gt_rpm",
+          "x": 411,
+          "y": 429,
+          "radius": 52
+        },
+        {
+          "kind": "speedo",
+          "sprite": "gauge_vortex_gt_speedo",
+          "x": 551,
+          "y": 429,
+          "radius": 52
+        },
+        {
+          "kind": "clock",
+          "sprite": "gauge_vortex_gt_clock",
+          "x": 481,
+          "y": 393,
+          "radius": 22
+        },
+        {
+          "kind": "fuel",
+          "sprite": "gauge_vortex_gt_fuel",
+          "x": 837,
+          "y": 425,
+          "radius": 36
+        }
+      ]
+    },
+    "cockpit_night_hawk": {
+      "markerColor": "#ffb020",
+      "thick": 0.12,
+      "wheel": {
+        "x": 481,
+        "y": 533,
+        "spokes": {
+          "x": 264,
+          "y": 350,
+          "frameWidth": 434,
+          "frameHeight": 270,
+          "degrees": [
+            -45,
+            -40,
+            -35,
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45
+          ]
+        },
+        "marker": {
+          "rx": 200.09,
+          "ry": 187,
+          "cx": 481,
+          "cy": 533,
+          "n": 2.2
+        }
+      },
+      "gauges": [
+        {
+          "kind": "oil",
+          "sprite": "gauge_night_hawk_oil",
+          "x": 81,
+          "y": 433,
+          "radius": 36
+        },
+        {
+          "kind": "temp",
+          "sprite": "gauge_night_hawk_temp",
+          "x": 185,
+          "y": 437,
+          "radius": 36
+        },
+        {
+          "kind": "rpm",
+          "sprite": "gauge_night_hawk_rpm",
+          "x": 411,
+          "y": 429,
+          "radius": 52
+        },
+        {
+          "kind": "speedo",
+          "sprite": "gauge_night_hawk_speedo",
+          "x": 551,
+          "y": 429,
+          "radius": 52
+        },
+        {
+          "kind": "clock",
+          "sprite": "gauge_night_hawk_clock",
+          "x": 741,
+          "y": 437,
+          "radius": 36
+        }
+      ]
+    },
+    "cockpit_apex_xr": {
+      "markerColor": "#3fd0e0",
+      "thick": 0.11,
+      "wheel": {
+        "x": 481,
+        "y": 533,
+        "spokes": {
+          "x": 264,
+          "y": 346,
+          "frameWidth": 434,
+          "frameHeight": 274,
+          "degrees": [
+            -45,
+            -40,
+            -35,
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45
+          ]
+        },
+        "marker": {
+          "rx": 202.23,
+          "ry": 189,
+          "cx": 481,
+          "cy": 533,
+          "n": 2
+        }
+      },
+      "gauges": [
+        {
+          "kind": "oil",
+          "sprite": "gauge_apex_xr_oil",
+          "x": 69,
+          "y": 413,
+          "radius": 32
+        },
+        {
+          "kind": "volts",
+          "sprite": "gauge_apex_xr_volts",
+          "x": 149,
+          "y": 413,
+          "radius": 32
+        },
+        {
+          "kind": "temp",
+          "sprite": "gauge_apex_xr_temp",
+          "x": 233,
+          "y": 421,
+          "radius": 32
+        },
+        {
+          "kind": "rpm",
+          "sprite": "gauge_apex_xr_rpm",
+          "x": 411,
+          "y": 429,
+          "radius": 52
+        },
+        {
+          "kind": "speedo",
+          "sprite": "gauge_apex_xr_speedo",
+          "x": 551,
+          "y": 429,
+          "radius": 52
+        },
+        {
+          "kind": "boost",
+          "sprite": "gauge_apex_xr_boost",
+          "x": 729,
+          "y": 421,
+          "radius": 32
+        },
+        {
+          "kind": "fuel",
+          "sprite": "gauge_apex_xr_fuel",
+          "x": 813,
+          "y": 413,
+          "radius": 32
+        },
+        {
+          "kind": "clock",
+          "sprite": "gauge_apex_xr_clock",
+          "x": 893,
+          "y": 413,
+          "radius": 32
+        }
+      ]
+    },
+    "cockpit_thunder_v8": {
+      "markerColor": "#ff3b30",
+      "thick": 0.17,
+      "wheel": {
+        "x": 481,
+        "y": 517,
+        "spokes": {
+          "x": 262,
+          "y": 346,
+          "frameWidth": 438,
+          "frameHeight": 258,
+          "degrees": [
+            -45,
+            -40,
+            -35,
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45
+          ]
+        },
+        "marker": {
+          "rx": 201.96,
+          "ry": 172.04000000000002,
+          "cx": 481,
+          "cy": 517,
+          "n": 2
+        }
+      },
+      "gauges": [
+        {
+          "kind": "temp",
+          "sprite": "gauge_thunder_v8_temp",
+          "x": 197,
+          "y": 441,
+          "radius": 36
+        },
+        {
+          "kind": "rpm",
+          "sprite": "gauge_thunder_v8_rpm",
+          "x": 411,
+          "y": 429,
+          "radius": 52
+        },
+        {
+          "kind": "speedo",
+          "sprite": "gauge_thunder_v8_speedo",
+          "x": 551,
+          "y": 429,
+          "radius": 52
+        },
+        {
+          "kind": "fuel",
+          "sprite": "gauge_thunder_v8_fuel",
+          "x": 765,
+          "y": 441,
+          "radius": 36
+        }
+      ]
+    },
+    "cockpit_silverline_turbo": {
+      "markerColor": "#ff3b30",
+      "thick": 0.12,
+      "wheel": {
+        "x": 481,
+        "y": 529,
+        "spokes": {
+          "x": 278,
+          "y": 346,
+          "frameWidth": 406,
+          "frameHeight": 270,
+          "degrees": [
+            -45,
+            -40,
+            -35,
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45
+          ]
+        },
+        "marker": {
+          "rx": 188,
+          "ry": 184.23999999999998,
+          "cx": 481,
+          "cy": 529,
+          "n": 2.2
+        }
+      },
+      "gauges": [
+        {
+          "kind": "oil",
+          "sprite": "gauge_silverline_turbo_oil",
+          "x": 77,
+          "y": 425,
+          "radius": 32
+        },
+        {
+          "kind": "volts",
+          "sprite": "gauge_silverline_turbo_volts",
+          "x": 161,
+          "y": 425,
+          "radius": 32
+        },
+        {
+          "kind": "speedo",
+          "sprite": "gauge_silverline_turbo_speedo",
+          "x": 411,
+          "y": 429,
+          "radius": 52
+        },
+        {
+          "kind": "boost",
+          "sprite": "gauge_silverline_turbo_boost",
+          "x": 481,
+          "y": 395,
+          "radius": 22
+        },
+        {
+          "kind": "rpm",
+          "sprite": "gauge_silverline_turbo_rpm",
+          "x": 551,
+          "y": 429,
+          "radius": 52
+        },
+        {
+          "kind": "temp",
+          "sprite": "gauge_silverline_turbo_temp",
+          "x": 801,
+          "y": 425,
+          "radius": 32
+        },
+        {
+          "kind": "fuel",
+          "sprite": "gauge_silverline_turbo_fuel",
+          "x": 885,
+          "y": 425,
+          "radius": 32
+        }
+      ]
+    },
+    "cockpit_phantom_x": {
+      "markerColor": "#ff2a2a",
+      "thick": 0.13,
+      "wheel": {
+        "x": 481,
+        "y": 517,
+        "spokes": {
+          "x": 272,
+          "y": 350,
+          "frameWidth": 418,
+          "frameHeight": 254,
+          "degrees": [
+            -45,
+            -40,
+            -35,
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45
+          ]
+        },
+        "marker": {
+          "rx": 190.55,
+          "ry": 170.20000000000002,
+          "cx": 481,
+          "cy": 517,
+          "n": 2.3
+        }
+      },
+      "gauges": [
+        {
+          "kind": "fuel",
+          "sprite": "gauge_phantom_x_fuel",
+          "x": 233,
+          "y": 445,
+          "radius": 36
+        },
+        {
+          "kind": "rpm",
+          "sprite": "gauge_phantom_x_rpm",
+          "x": 411,
+          "y": 429,
+          "radius": 52
+        },
+        {
+          "kind": "speedo",
+          "sprite": "gauge_phantom_x_speedo",
+          "x": 551,
+          "y": 429,
+          "radius": 52
+        },
+        {
+          "kind": "temp",
+          "sprite": "gauge_phantom_x_temp",
+          "x": 729,
+          "y": 445,
+          "radius": 36
+        }
+      ]
+    }
+  }
+}

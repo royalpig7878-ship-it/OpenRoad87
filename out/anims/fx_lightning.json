@@ -1,0 +1,106 @@
+{
+ "frames": {
+  "fx_lightning_0": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 256,
+    "h": 300
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 256,
+    "h": 300
+   },
+   "sourceSize": {
+    "w": 256,
+    "h": 300
+   },
+   "duration": 83
+  },
+  "fx_lightning_1": {
+   "frame": {
+    "x": 256,
+    "y": 0,
+    "w": 256,
+    "h": 300
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 256,
+    "h": 300
+   },
+   "sourceSize": {
+    "w": 256,
+    "h": 300
+   },
+   "duration": 83
+  },
+  "fx_lightning_2": {
+   "frame": {
+    "x": 512,
+    "y": 0,
+    "w": 256,
+    "h": 300
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 256,
+    "h": 300
+   },
+   "sourceSize": {
+    "w": 256,
+    "h": 300
+   },
+   "duration": 83
+  },
+  "fx_lightning_3": {
+   "frame": {
+    "x": 768,
+    "y": 0,
+    "w": 256,
+    "h": 300
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 256,
+    "h": 300
+   },
+   "sourceSize": {
+    "w": 256,
+    "h": 300
+   },
+   "duration": 83
+  }
+ },
+ "meta": {
+  "app": "pxl",
+  "image": "fx_lightning.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1024,
+   "h": 300
+  },
+  "scale": "1",
+  "frameTags": [
+   {
+    "name": "fx_lightning",
+    "from": 0,
+    "to": 3,
+    "direction": "forward"
+   }
+  ]
+ }
+}

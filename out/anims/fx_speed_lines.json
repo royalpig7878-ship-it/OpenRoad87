@@ -1,0 +1,106 @@
+{
+ "frames": {
+  "fx_speed_lines_0": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "sourceSize": {
+    "w": 960,
+    "h": 540
+   },
+   "duration": 50
+  },
+  "fx_speed_lines_1": {
+   "frame": {
+    "x": 960,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "sourceSize": {
+    "w": 960,
+    "h": 540
+   },
+   "duration": 50
+  },
+  "fx_speed_lines_2": {
+   "frame": {
+    "x": 1920,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "sourceSize": {
+    "w": 960,
+    "h": 540
+   },
+   "duration": 50
+  },
+  "fx_speed_lines_3": {
+   "frame": {
+    "x": 2880,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "sourceSize": {
+    "w": 960,
+    "h": 540
+   },
+   "duration": 50
+  }
+ },
+ "meta": {
+  "app": "pxl",
+  "image": "fx_speed_lines.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 3840,
+   "h": 540
+  },
+  "scale": "1",
+  "frameTags": [
+   {
+    "name": "fx_speed_lines",
+    "from": 0,
+    "to": 3,
+    "direction": "forward"
+   }
+  ]
+ }
+}

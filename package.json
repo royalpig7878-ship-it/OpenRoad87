@@ -1,0 +1,36 @@
+{
+  "name": "open-road-87",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host",
+    "typecheck": "tsc --noEmit",
+    "assets:verify": "node scripts/verify-assets.mjs",
+    "test:sim": "npm run sim:driving && npm run sim:traffic && npm run sim:world && npm run sim:police && npm run sim:economy && npm run sim:arcade && npm run sim:career && npm run sim:touch && npm run sim:audio && npm run sim:save && npm run sim:render && npm run sim:scaling && npm run check:wheels",
+    "sim:driving": "esbuild scripts/sim-driving.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/sim-driving.mjs --log-level=warning && node node_modules/.cache/sim-driving.mjs",
+    "sim:traffic": "esbuild scripts/sim-traffic.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/sim-traffic.mjs --log-level=warning && node node_modules/.cache/sim-traffic.mjs",
+    "sim:world": "esbuild scripts/sim-world.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/sim-world.mjs --log-level=warning && node node_modules/.cache/sim-world.mjs",
+    "sim:police": "esbuild scripts/sim-police.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/sim-police.mjs --log-level=warning && node node_modules/.cache/sim-police.mjs",
+    "sim:economy": "esbuild scripts/sim-economy.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/sim-economy.mjs --log-level=warning && node node_modules/.cache/sim-economy.mjs",
+    "sim:arcade": "esbuild scripts/sim-arcade.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/sim-arcade.mjs --log-level=warning && node node_modules/.cache/sim-arcade.mjs",
+    "sim:career": "esbuild scripts/sim-career.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/sim-career.mjs --log-level=warning && node node_modules/.cache/sim-career.mjs",
+    "sim:touch": "esbuild scripts/sim-touch.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/sim-touch.mjs --log-level=warning && node node_modules/.cache/sim-touch.mjs",
+    "sim:audio": "esbuild scripts/sim-audio.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/sim-audio.mjs --log-level=warning && node node_modules/.cache/sim-audio.mjs",
+    "sim:save": "esbuild scripts/sim-save.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/sim-save.mjs --log-level=warning && node node_modules/.cache/sim-save.mjs",
+    "bench": "esbuild scripts/bench-alloc.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/bench-alloc.mjs --log-level=warning && node --expose-gc --max-semi-space-size=1024 node_modules/.cache/bench-alloc.mjs",
+    "sim:render": "esbuild scripts/sim-render.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/sim-render.mjs --log-level=warning && node node_modules/.cache/sim-render.mjs",
+    "sim:scaling": "esbuild scripts/sim-scaling.ts --bundle --platform=node --format=esm --outfile=node_modules/.cache/sim-scaling.mjs --log-level=warning && node node_modules/.cache/sim-scaling.mjs",
+    "check:wheels": "node scripts/wheel-gauge-overlap.mjs"
+  },
+  "dependencies": {
+    "phaser": "^4.2.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.7"
+  }
+}

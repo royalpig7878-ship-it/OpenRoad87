@@ -1,0 +1,537 @@
+{
+  "_note": "pxPerMetre: world scale the art was drawn at (null for tiling background layers). Objects: place the bottom-centre pixel on the ground. Backgrounds tile horizontally (left and right edges match).",
+  "assets": {
+    "scenery_mountain_far": {
+      "pxPerMetre": null,
+      "anchor": "tile-x",
+      "kind": "background",
+      "w": 960,
+      "h": 200
+    },
+    "scenery_mountain_near": {
+      "pxPerMetre": null,
+      "anchor": "tile-x",
+      "kind": "background",
+      "w": 960,
+      "h": 240
+    },
+    "scenery_pine_tree": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 112,
+      "h": 240
+    },
+    "scenery_pine_tree_small": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 64,
+      "h": 112
+    },
+    "scenery_rock_large": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 176,
+      "h": 120
+    },
+    "scenery_rock_small": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 48,
+      "h": 32
+    },
+    "scenery_guardrail": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 128,
+      "h": 24
+    },
+    "scenery_road_sign": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 80,
+      "h": 80
+    },
+    "scenery_tunnel": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 352,
+      "h": 240
+    },
+    "forest_pine_cluster": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 224,
+      "h": 240
+    },
+    "forest_deciduous_tree": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 160,
+      "h": 192
+    },
+    "forest_bush": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 64,
+      "h": 40
+    },
+    "forest_wooden_fence": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 128,
+      "h": 32
+    },
+    "country_barn": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 273,
+      "h": 216
+    },
+    "country_farmhouse": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 202,
+      "h": 188
+    },
+    "country_windmill": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 112,
+      "h": 224
+    },
+    "country_telephone_pole": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 64,
+      "h": 192
+    },
+    "desert_cactus_large": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 80,
+      "h": 160
+    },
+    "desert_cactus_small": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 40,
+      "h": 48
+    },
+    "desert_rock": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 176,
+      "h": 112
+    },
+    "desert_bush": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 56,
+      "h": 32
+    },
+    "desert_mesa": {
+      "pxPerMetre": null,
+      "anchor": "tile-x",
+      "kind": "background",
+      "w": 960,
+      "h": 160
+    },
+    "desert_billboard": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 224,
+      "h": 176
+    },
+    "desert_gas_station": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 402,
+      "h": 188
+    },
+    "desert_guardrail": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 128,
+      "h": 24
+    },
+    "coastal_palm_tree": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 192,
+      "h": 224
+    },
+    "coastal_ocean_background": {
+      "pxPerMetre": null,
+      "anchor": "tile-x",
+      "kind": "background",
+      "w": 960,
+      "h": 160
+    },
+    "coastal_cliff": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 224,
+      "h": 160
+    },
+    "coastal_guardrail": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 128,
+      "h": 24
+    },
+    "coastal_lighthouse": {
+      "pxPerMetre": 8,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 96,
+      "h": 192
+    },
+    "road_guardrail": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 128,
+      "h": 24
+    },
+    "road_concrete_barrier": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 44,
+      "h": 35
+    },
+    "road_bridge": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 512,
+      "h": 160
+    },
+    "road_tunnel": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 320,
+      "h": 208
+    },
+    "road_toll_booth": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 173,
+      "h": 102
+    },
+    "road_lamppost": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 112,
+      "h": 192
+    },
+    "sign_speed_limit": {
+      "pxPerMetre": 64,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 128,
+      "h": 192
+    },
+    "sign_speed_limit_65": {
+      "pxPerMetre": 64,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 128,
+      "h": 192
+    },
+    "sign_speed_limit_75": {
+      "pxPerMetre": 64,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 128,
+      "h": 192
+    },
+    "sign_warning_curve": {
+      "pxPerMetre": 64,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 128,
+      "h": 192
+    },
+    "sign_warning_grade": {
+      "pxPerMetre": 64,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 128,
+      "h": 192
+    },
+    "sign_warning_mountain_pass": {
+      "pxPerMetre": 64,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 128,
+      "h": 192
+    },
+    "sign_exit": {
+      "pxPerMetre": 64,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 128,
+      "h": 192
+    },
+    "sign_rest_area": {
+      "pxPerMetre": 64,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 128,
+      "h": 192
+    },
+    "sign_fuel": {
+      "pxPerMetre": 64,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 128,
+      "h": 192
+    },
+    "coastal_road_sign": {
+      "pxPerMetre": 64,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 128,
+      "h": 192
+    },
+    "road_mile_marker": {
+      "pxPerMetre": 64,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 32,
+      "h": 112
+    },
+    "scenery_grass_tuft": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 40,
+      "h": 24
+    },
+    "scenery_wildflowers": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 56,
+      "h": 30
+    },
+    "scenery_log": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 104,
+      "h": 34
+    },
+    "forest_fern": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 64,
+      "h": 44
+    },
+    "forest_stump": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 40,
+      "h": 36
+    },
+    "desert_dry_grass": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 44,
+      "h": 26
+    },
+    "desert_tumbleweed": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 40,
+      "h": 36
+    },
+    "desert_joshua_tree": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 96,
+      "h": 160
+    },
+    "desert_rock_small": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 72,
+      "h": 40
+    },
+    "coastal_dune_grass": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 48,
+      "h": 42
+    },
+    "coastal_beach_umbrella": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 96,
+      "h": 104
+    },
+    "coastal_beach_rocks": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 80,
+      "h": 36
+    },
+    "country_wheat": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 56,
+      "h": 34
+    },
+    "country_haybale": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 60,
+      "h": 50
+    },
+    "country_corn": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 72,
+      "h": 96
+    },
+    "country_mailbox": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 28,
+      "h": 60
+    },
+    "night_building": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 160,
+      "h": 176
+    },
+    "night_warehouse": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 192,
+      "h": 96
+    },
+    "night_billboard": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 224,
+      "h": 176
+    },
+    "synth_layer_sky": {
+      "pxPerMetre": null,
+      "anchor": "tile-x",
+      "kind": "background",
+      "w": 960,
+      "h": 540
+    },
+    "synth_wire_peaks": {
+      "pxPerMetre": null,
+      "anchor": "tile-x",
+      "kind": "background",
+      "w": 960,
+      "h": 120
+    },
+    "synth_skyline": {
+      "pxPerMetre": null,
+      "anchor": "tile-x",
+      "kind": "background",
+      "w": 960,
+      "h": 160
+    },
+    "synth_pylon_pink": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 112,
+      "h": 192
+    },
+    "synth_pylon_cyan": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 112,
+      "h": 192
+    },
+    "synth_tower_pink": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 160,
+      "h": 288
+    },
+    "synth_tower_cyan": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 160,
+      "h": 288
+    },
+    "synth_billboard": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 224,
+      "h": 176
+    },
+    "synth_palm": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 192,
+      "h": 224
+    },
+    "synth_crystals": {
+      "pxPerMetre": 16,
+      "anchor": "bottom-centre",
+      "kind": "object",
+      "w": 64,
+      "h": 56
+    }
+  }
+}

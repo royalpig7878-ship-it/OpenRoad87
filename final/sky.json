@@ -1,0 +1,44 @@
+{
+  "horizonY": 262,
+  "size": [
+    960,
+    540
+  ],
+  "tileable": "horizontal",
+  "draw_order": [
+    "layer_sky",
+    "layer_far",
+    "layer_near"
+  ],
+  "parallax": {
+    "layer_sky": 0.02,
+    "layer_far": 0.08,
+    "layer_near": 0.2
+  },
+  "times": {
+    "day": {
+      "composite": "sky_day.png",
+      "layer_sky": "sky_day_layer_sky.png",
+      "layer_far": "sky_day_layer_far.png",
+      "layer_near": "sky_day_layer_near.png"
+    },
+    "sunset": {
+      "composite": "sky_sunset.png",
+      "layer_sky": "sky_sunset_layer_sky.png",
+      "layer_far": "sky_sunset_layer_far.png",
+      "layer_near": "sky_sunset_layer_near.png"
+    },
+    "night": {
+      "composite": "sky_night.png",
+      "layer_sky": "sky_night_layer_sky.png",
+      "layer_far": "sky_night_layer_far.png",
+      "layer_near": "sky_night_layer_near.png"
+    },
+    "storm": {
+      "composite": "sky_storm.png",
+      "layer_sky": "sky_storm_layer_sky.png",
+      "layer_far": "sky_storm_layer_far.png",
+      "layer_near": "sky_storm_layer_near.png"
+    }
+  }
+}

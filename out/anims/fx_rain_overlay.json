@@ -1,0 +1,190 @@
+{
+ "frames": {
+  "fx_rain_overlay_0": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "sourceSize": {
+    "w": 960,
+    "h": 540
+   },
+   "duration": 63
+  },
+  "fx_rain_overlay_1": {
+   "frame": {
+    "x": 960,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "sourceSize": {
+    "w": 960,
+    "h": 540
+   },
+   "duration": 63
+  },
+  "fx_rain_overlay_2": {
+   "frame": {
+    "x": 1920,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "sourceSize": {
+    "w": 960,
+    "h": 540
+   },
+   "duration": 63
+  },
+  "fx_rain_overlay_3": {
+   "frame": {
+    "x": 2880,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "sourceSize": {
+    "w": 960,
+    "h": 540
+   },
+   "duration": 63
+  },
+  "fx_rain_overlay_4": {
+   "frame": {
+    "x": 3840,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "sourceSize": {
+    "w": 960,
+    "h": 540
+   },
+   "duration": 63
+  },
+  "fx_rain_overlay_5": {
+   "frame": {
+    "x": 4800,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "sourceSize": {
+    "w": 960,
+    "h": 540
+   },
+   "duration": 63
+  },
+  "fx_rain_overlay_6": {
+   "frame": {
+    "x": 5760,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "sourceSize": {
+    "w": 960,
+    "h": 540
+   },
+   "duration": 63
+  },
+  "fx_rain_overlay_7": {
+   "frame": {
+    "x": 6720,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 960,
+    "h": 540
+   },
+   "sourceSize": {
+    "w": 960,
+    "h": 540
+   },
+   "duration": 63
+  }
+ },
+ "meta": {
+  "app": "pxl",
+  "image": "fx_rain_overlay.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 7680,
+   "h": 540
+  },
+  "scale": "1",
+  "frameTags": [
+   {
+    "name": "fx_rain_overlay",
+    "from": 0,
+    "to": 7,
+    "direction": "forward"
+   }
+  ]
+ }
+}

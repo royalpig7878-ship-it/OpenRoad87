@@ -1,0 +1,372 @@
+{
+  "traffic_sedan": {
+    "pxPerMetre": 65.186,
+    "widthM": 1.76,
+    "lengthM": 4.8,
+    "bounds": {
+      "x": 4,
+      "y": 12,
+      "w": 183,
+      "h": 108
+    },
+    "bottomCentre": {
+      "x": 95,
+      "y": 119
+    }
+  },
+  "traffic_sedan_front": {
+    "pxPerMetre": 65.186,
+    "widthM": 1.76,
+    "lengthM": 4.8,
+    "bounds": {
+      "x": 4,
+      "y": 8,
+      "w": 183,
+      "h": 111
+    },
+    "bottomCentre": {
+      "x": 95,
+      "y": 118
+    }
+  },
+  "traffic_sports_car": {
+    "pxPerMetre": 70.433,
+    "widthM": 1.68,
+    "lengthM": 4.2,
+    "bounds": {
+      "x": 4,
+      "y": 17,
+      "w": 183,
+      "h": 97
+    },
+    "bottomCentre": {
+      "x": 95,
+      "y": 113
+    }
+  },
+  "traffic_sports_car_front": {
+    "pxPerMetre": 70.433,
+    "widthM": 1.68,
+    "lengthM": 4.2,
+    "bounds": {
+      "x": 4,
+      "y": 14,
+      "w": 183,
+      "h": 100
+    },
+    "bottomCentre": {
+      "x": 95,
+      "y": 113
+    }
+  },
+  "traffic_station_wagon": {
+    "pxPerMetre": 61.396,
+    "widthM": 1.8,
+    "lengthM": 5.1,
+    "bounds": {
+      "x": 6,
+      "y": 16,
+      "w": 179,
+      "h": 108
+    },
+    "bottomCentre": {
+      "x": 95,
+      "y": 123
+    }
+  },
+  "traffic_station_wagon_front": {
+    "pxPerMetre": 61.396,
+    "widthM": 1.8,
+    "lengthM": 5.1,
+    "bounds": {
+      "x": 6,
+      "y": 4,
+      "w": 179,
+      "h": 120
+    },
+    "bottomCentre": {
+      "x": 95,
+      "y": 123
+    }
+  },
+  "traffic_delivery_van": {
+    "pxPerMetre": 37.43,
+    "widthM": 2.1,
+    "lengthM": 5.6,
+    "bounds": {
+      "x": 35,
+      "y": 10,
+      "w": 121,
+      "h": 114
+    },
+    "bottomCentre": {
+      "x": 95,
+      "y": 123
+    }
+  },
+  "traffic_delivery_van_front": {
+    "pxPerMetre": 37.43,
+    "widthM": 2.1,
+    "lengthM": 5.6,
+    "bounds": {
+      "x": 35,
+      "y": 4,
+      "w": 123,
+      "h": 120
+    },
+    "bottomCentre": {
+      "x": 96,
+      "y": 123
+    }
+  },
+  "traffic_semi_truck": {
+    "pxPerMetre": 21.628,
+    "widthM": 2.5,
+    "lengthM": 15,
+    "bounds": {
+      "x": 36,
+      "y": 9,
+      "w": 120,
+      "h": 115
+    },
+    "bottomCentre": {
+      "x": 96,
+      "y": 123
+    }
+  },
+  "traffic_semi_truck_front": {
+    "pxPerMetre": 21.628,
+    "widthM": 2.5,
+    "lengthM": 15,
+    "bounds": {
+      "x": 36,
+      "y": 4,
+      "w": 121,
+      "h": 120
+    },
+    "bottomCentre": {
+      "x": 96,
+      "y": 123
+    }
+  },
+  "traffic_bus": {
+    "pxPerMetre": 26.187,
+    "widthM": 2.55,
+    "lengthM": 12,
+    "bounds": {
+      "x": 30,
+      "y": 4,
+      "w": 133,
+      "h": 119
+    },
+    "bottomCentre": {
+      "x": 96,
+      "y": 122
+    }
+  },
+  "traffic_bus_front": {
+    "pxPerMetre": 26.187,
+    "widthM": 2.55,
+    "lengthM": 12,
+    "bounds": {
+      "x": 30,
+      "y": 4,
+      "w": 133,
+      "h": 120
+    },
+    "bottomCentre": {
+      "x": 96,
+      "y": 123
+    }
+  },
+  "traffic_sedan_back": {
+    "pxPerMetre": 64,
+    "widthM": 1.76,
+    "lengthM": 4.8,
+    "size": {
+      "w": 138,
+      "h": 105
+    },
+    "bounds": {
+      "x": 4,
+      "y": 5,
+      "w": 131,
+      "h": 96
+    },
+    "bottomCentre": {
+      "x": 69,
+      "y": 100
+    }
+  },
+  "traffic_sports_car_back": {
+    "pxPerMetre": 64,
+    "widthM": 1.68,
+    "lengthM": 4.2,
+    "size": {
+      "w": 131,
+      "h": 90
+    },
+    "bounds": {
+      "x": 4,
+      "y": 5,
+      "w": 124,
+      "h": 81
+    },
+    "bottomCentre": {
+      "x": 66,
+      "y": 85
+    }
+  },
+  "traffic_station_wagon_back": {
+    "pxPerMetre": 64,
+    "widthM": 1.8,
+    "lengthM": 5.1,
+    "size": {
+      "w": 128,
+      "h": 116
+    },
+    "bounds": {
+      "x": 4,
+      "y": 8,
+      "w": 121,
+      "h": 104
+    },
+    "bottomCentre": {
+      "x": 64,
+      "y": 111
+    }
+  },
+  "traffic_delivery_van_back": {
+    "pxPerMetre": 64,
+    "widthM": 2.1,
+    "lengthM": 5.6,
+    "size": {
+      "w": 154,
+      "h": 190
+    },
+    "bounds": {
+      "x": 4,
+      "y": 7,
+      "w": 147,
+      "h": 178
+    },
+    "bottomCentre": {
+      "x": 77,
+      "y": 184
+    }
+  },
+  "traffic_semi_truck_back": {
+    "pxPerMetre": 64,
+    "widthM": 2.5,
+    "lengthM": 15,
+    "size": {
+      "w": 177,
+      "h": 294
+    },
+    "bounds": {
+      "x": 4,
+      "y": 10,
+      "w": 170,
+      "h": 279
+    },
+    "bottomCentre": {
+      "x": 89,
+      "y": 288
+    }
+  },
+  "traffic_bus_back": {
+    "pxPerMetre": 64,
+    "widthM": 2.55,
+    "lengthM": 12,
+    "size": {
+      "w": 174,
+      "h": 255
+    },
+    "bounds": {
+      "x": 4,
+      "y": 6,
+      "w": 167,
+      "h": 244
+    },
+    "bottomCentre": {
+      "x": 87,
+      "y": 249
+    }
+  },
+  "police_cruiser_back_off": {
+    "pxPerMetre": 64,
+    "widthM": 1.9,
+    "lengthM": 5.3,
+    "size": {
+      "w": 147,
+      "h": 115
+    },
+    "bounds": {
+      "x": 4,
+      "y": 1,
+      "w": 140,
+      "h": 110
+    },
+    "bottomCentre": {
+      "x": 74,
+      "y": 110
+    }
+  },
+  "police_cruiser_back_red": {
+    "pxPerMetre": 64,
+    "widthM": 1.9,
+    "lengthM": 5.3,
+    "size": {
+      "w": 147,
+      "h": 115
+    },
+    "bounds": {
+      "x": 4,
+      "y": 1,
+      "w": 140,
+      "h": 110
+    },
+    "bottomCentre": {
+      "x": 74,
+      "y": 110
+    }
+  },
+  "police_cruiser_back_blue": {
+    "pxPerMetre": 64,
+    "widthM": 1.9,
+    "lengthM": 5.3,
+    "size": {
+      "w": 147,
+      "h": 115
+    },
+    "bounds": {
+      "x": 4,
+      "y": 1,
+      "w": 140,
+      "h": 110
+    },
+    "bottomCentre": {
+      "x": 74,
+      "y": 110
+    }
+  },
+  "police_cruiser_back_on": {
+    "pxPerMetre": 64,
+    "widthM": 1.9,
+    "lengthM": 5.3,
+    "size": {
+      "w": 147,
+      "h": 115
+    },
+    "bounds": {
+      "x": 4,
+      "y": 1,
+      "w": 140,
+      "h": 110
+    },
+    "bottomCentre": {
+      "x": 74,
+      "y": 110
+    }
+  }
+}

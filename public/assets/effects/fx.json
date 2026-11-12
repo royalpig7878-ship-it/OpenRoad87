@@ -1,0 +1,152 @@
+{
+  "fx_rain_overlay": {
+    "file": "fx_rain_overlay.png",
+    "frame": [
+      960,
+      540
+    ],
+    "frames": 8,
+    "fps": 16,
+    "blend": "normal",
+    "loop": true,
+    "anchor": "screen",
+    "grid": [
+      4,
+      2
+    ],
+    "note": "re-gridded to 4x2 so the texture is <= 4096 px wide (scripts/reslice-sheets.mjs)"
+  },
+  "fx_rain_splashes": {
+    "file": "fx_rain_splashes.png",
+    "frame": [
+      960,
+      540
+    ],
+    "frames": 8,
+    "fps": 8,
+    "blend": "normal",
+    "loop": true,
+    "anchor": "screen (windshield)",
+    "grid": [
+      4,
+      2
+    ],
+    "note": "re-gridded to 4x2 so the texture is <= 4096 px wide (scripts/reslice-sheets.mjs)"
+  },
+  "fx_fog_overlay": {
+    "file": "fx_fog_overlay.png",
+    "frame": [
+      960,
+      540
+    ],
+    "frames": 1,
+    "blend": "normal",
+    "anchor": "screen; fog bank peaks at horizon y 270",
+    "tileable": "horizontal"
+  },
+  "fx_dust": {
+    "file": "fx_dust.png",
+    "frame": [
+      128,
+      96
+    ],
+    "frames": 8,
+    "fps": 12,
+    "loop": true,
+    "anchor": "emitter at (52,84) in frame"
+  },
+  "fx_tire_smoke": {
+    "file": "fx_tire_smoke.png",
+    "frame": [
+      128,
+      96
+    ],
+    "frames": 8,
+    "fps": 12,
+    "loop": true,
+    "anchor": "tyre contact at (40,86) in frame; plume drifts right (flip for left)"
+  },
+  "fx_collision_sparks": {
+    "file": "fx_collision_sparks.png",
+    "frame": [
+      128,
+      128
+    ],
+    "frames": 8,
+    "fps": 16,
+    "loop": false,
+    "anchor": "impact point = frame centre (64,64)"
+  },
+  "fx_crash_smoke": {
+    "file": "fx_crash_smoke.png",
+    "frame": [
+      128,
+      128
+    ],
+    "frames": 8,
+    "fps": 10,
+    "loop": true,
+    "anchor": "smoke source at (62,112) in frame"
+  },
+  "fx_crash_impact": {
+    "file": "fx_crash_impact.png",
+    "frame": [
+      128,
+      128
+    ],
+    "frames": 8,
+    "fps": 14,
+    "loop": false,
+    "anchor": "impact point = frame centre (64,64)",
+    "sequence": [
+      "flash",
+      "small sparks",
+      "impact burst",
+      "large sparks",
+      "smoke begins",
+      "smoke expands",
+      "smoke dissipates",
+      "fading particles"
+    ]
+  },
+  "fx_lightning": {
+    "file": "fx_lightning.png",
+    "frame": [
+      256,
+      300
+    ],
+    "frames": 4,
+    "fps": 12,
+    "loop": false,
+    "anchor": "bottom of frame on the horizon (y 262)",
+    "sequence": [
+      "strike",
+      "flicker",
+      "restrike",
+      "residual"
+    ],
+    "note": "pair frames 0 and 2 with a brief full-screen white flash"
+  },
+  "fx_headlight_glow": {
+    "file": "fx_headlight_glow.png",
+    "frame": [
+      960,
+      540
+    ],
+    "frames": 1,
+    "blend": "add or normal",
+    "anchor": "screen; vanishing point (480,262)"
+  },
+  "fx_speed_lines": {
+    "file": "fx_speed_lines.png",
+    "frame": [
+      960,
+      540
+    ],
+    "frames": 4,
+    "fps": 20,
+    "blend": "normal",
+    "loop": true,
+    "anchor": "screen; radiate from (480,262)"
+  }
+}

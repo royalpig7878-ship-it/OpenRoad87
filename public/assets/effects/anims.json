@@ -1,0 +1,131 @@
+{
+  "anim_steering_wheel": {
+    "file": "anim_steering_wheel.png",
+    "frame": [
+      256,
+      256
+    ],
+    "frames": 5,
+    "fps": 8,
+    "frames_deg": [
+      -30,
+      -15,
+      0,
+      15,
+      30
+    ],
+    "loop": false,
+    "note": "pick frame by steering input; pivot = frame centre (128,128)"
+  },
+  "anim_headlights": {
+    "file": "anim_headlights.png",
+    "frame": [
+      128,
+      48
+    ],
+    "frames": 4,
+    "fps": 6,
+    "sequence": [
+      "off",
+      "on",
+      "high-beam flash",
+      "on"
+    ],
+    "loop": true
+  },
+  "anim_police_lights": {
+    "file": "anim_police_lights.png",
+    "frame": [
+      192,
+      128
+    ],
+    "frames": 4,
+    "fps": 8,
+    "sequence": [
+      "red",
+      "dark",
+      "blue",
+      "dark"
+    ],
+    "loop": true,
+    "note": "light bar only; frame-aligned overlay for police_cruiser_rear"
+  },
+  "anim_turn_signals": {
+    "file": "anim_turn_signals.png",
+    "frame": [
+      48,
+      32
+    ],
+    "frames": 4,
+    "fps": 4,
+    "sequence": [
+      "bright",
+      "on",
+      "off",
+      "off"
+    ],
+    "loop": true,
+    "note": "one amber lamp; place per side"
+  },
+  "anim_tire_smoke": {
+    "file": "anim_tire_smoke.png",
+    "frame": [
+      128,
+      96
+    ],
+    "frames": 8,
+    "fps": 12,
+    "loop": true,
+    "same_as": "fx_tire_smoke.png"
+  },
+  "anim_sparks": {
+    "file": "anim_sparks.png",
+    "frame": [
+      128,
+      128
+    ],
+    "frames": 8,
+    "fps": 16,
+    "loop": false,
+    "same_as": "fx_collision_sparks.png"
+  },
+  "anim_dust": {
+    "file": "anim_dust.png",
+    "frame": [
+      128,
+      96
+    ],
+    "frames": 6,
+    "fps": 12,
+    "loop": true,
+    "note": "6-frame version of fx_dust"
+  },
+  "anim_rain": {
+    "file": "anim_rain.png",
+    "frame": [
+      960,
+      540
+    ],
+    "frames": 8,
+    "fps": 16,
+    "loop": true,
+    "same_as": "fx_rain_overlay.png",
+    "grid": [
+      4,
+      2
+    ],
+    "note": "re-gridded to 4x2 so the texture is <= 4096 px wide (scripts/reslice-sheets.mjs)"
+  },
+  "anim_lightning": {
+    "file": "anim_lightning.png",
+    "frame": [
+      256,
+      300
+    ],
+    "frames": 4,
+    "fps": 12,
+    "loop": false,
+    "same_as": "fx_lightning.png",
+    "note": "bottom of frame on the horizon (y 262)"
+  }
+}
