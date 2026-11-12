@@ -37,6 +37,22 @@ export function createGame(parent: string): Phaser.Game {
     },
     scene: [BootScene, PreloadScene, MainMenuScene, PlaceholderScene, RoadTestScene, GarageScene, ArcadeMenuScene, ResultsScene, CareerScene, SettingsScene],
   });
+  // Phones: the browser toolbars grow and shrink and rotation reports stale sizes, so size the host to the real
+  // visible area ourselves and re-fit a few times after every change (otherwise the picture can be cut off).
+  const hostEl = document.getElementById(parent);
+  if (hostEl) {
+    const fit = () => {
+      const vv = window.visualViewport;
+      hostEl.style.width = `${Math.floor(vv?.width ?? window.innerWidth)}px`;
+      hostEl.style.height = `${Math.floor(vv?.height ?? window.innerHeight)}px`;
+      game.scale.refresh();
+    };
+    const refit = () => { fit(); for (const ms of [100, 300, 800]) window.setTimeout(fit, ms); };
+    window.addEventListener('resize', refit);
+    window.addEventListener('orientationchange', refit);
+    window.visualViewport?.addEventListener('resize', fit);
+    refit();
+  }
   // Even-pixel scaling at fractional screen scales (the "pixel scaling" setting turns it off).
   const host = document.getElementById(parent);
   if (host && game.canvas) {
