@@ -152,7 +152,7 @@ export class PickupRenderer {
       const proj = this.road.projectSprite(cameraPosition, ahead, p.x);
       if (!proj) continue;
       const pxPerMetre = ((proj.scale * this.cfg.width) / 2) * UNITS_PER_METRE;
-      const k = Math.round(((pxPerMetre * WIDTH_M) / SIZE) * 16) / 16;
+      const k = (pxPerMetre * WIDTH_M) / SIZE; // continuous: snapped steps made pickups grow in jumps
       if (k < 0.08) continue;
       const spr = this.sprites[used++];
       const bob = Math.sin(p.age * 3) * 0.08;

@@ -1,4 +1,4 @@
-import { RoadPalette } from '../RoadTypes';
+import { RoadPalette, RoadFence } from '../RoadTypes';
 import { TrackBuilder } from '../TrackBuilder';
 
 export type TimeOfDay = 'day' | 'sunset' | 'night' | 'storm';
@@ -57,6 +57,8 @@ export interface Environment {
   fixedLook?: boolean;
   /** Warning signs before curves, speed limits and mile markers. */
   signs?: { curve: string; speed: string[] };
+  /** A wooden fence running along the roadside (left out where a guardrail stands on that side). */
+  fence?: RoadFence;
 }
 
 /** A stretch of the world belonging to one environment. */

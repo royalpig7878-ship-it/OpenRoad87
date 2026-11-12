@@ -199,7 +199,6 @@ export const FOREST_HIGHWAY: Environment = {
     { textures: ['forest_stump'], spacing: [24, 60], lateral: [2, 6], scale: [0.9, 1.3] },
     { textures: ['scenery_log'], spacing: [40, 90], lateral: [2.2, 6], scale: [0.9, 1.3] },
     { textures: ['scenery_wildflowers'], spacing: [10, 28], lateral: [1.9, 4], scale: [0.9, 1.3] },
-    { textures: ['forest_wooden_fence'], spacing: [15, 16], lateral: [1.85, 1.9], scale: [1, 1] },
     { textures: ['road_bridge'], spacing: [300, 520], lateral: [0, 0], center: true },
   ],
   backdrop: {
@@ -209,6 +208,8 @@ export const FOREST_HIGHWAY: Environment = {
     ],
   },
   signs: { curve: 'sign_warning_curve', speed: ['sign_speed_limit_65', 'sign_warning_grade'] },
+  // Wooden fence along both sides (the old fence picture faced sideways across the road).
+  fence: { side: 0 },
 };
 
 export const COUNTRYSIDE: Environment = {
@@ -235,9 +236,8 @@ export const COUNTRYSIDE: Environment = {
     { textures: ['country_corn'], spacing: [3, 9], lateral: [3, 9], side: 1, scale: [0.9, 1.3] },
     { textures: ['country_haybale'], spacing: [14, 40], lateral: [2.2, 8], scale: [0.9, 1.3] },
     { textures: ['country_mailbox'], spacing: [60, 130], lateral: [1.9, 2.2], side: 1 },
-    { textures: ['country_telephone_pole'], spacing: [9, 10], lateral: [1.75, 1.8], side: 1, scale: [1, 1] },
+    { textures: ['country_telephone_pole'], spacing: [32, 40], lateral: [1.75, 1.8], side: 1, scale: [1, 1] },
     { textures: ['forest_deciduous_tree'], spacing: [8, 28], lateral: [2.5, 9], scale: [0.8, 1.2] },
-    { textures: ['forest_wooden_fence'], spacing: [15, 16], lateral: [1.85, 1.9], scale: [1, 1], side: -1 },
     { textures: ['road_bridge'], spacing: [420, 700], lateral: [0, 0], center: true },
   ],
   backdrop: {
@@ -247,6 +247,8 @@ export const COUNTRYSIDE: Environment = {
     ],
   },
   signs: { curve: 'sign_warning_curve', speed: ['sign_speed_limit', 'sign_exit'] },
+  // Farm fence along the fields on the left (the old fence picture faced sideways across the road).
+  fence: { side: -1 },
 };
 
 export const NIGHT_EXPRESSWAY: Environment = {

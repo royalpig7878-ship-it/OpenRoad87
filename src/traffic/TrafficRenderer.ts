@@ -55,9 +55,11 @@ export class TrafficRenderer {
       const info = this.art[texture];
       if (!info) continue;
 
-      // Screen pixels per metre / art pixels per metre, snapped to 1/16 steps to keep pixels tidy.
+      // Screen pixels per metre / art pixels per metre.
       const pxPerMetre = ((proj.scale * this.cfg.width) / 2) * UNITS_PER_METRE;
-      const k = Math.round((pxPerMetre / info.pxPerMetre) * 16) / 16;
+      // Continuous scale: snapping it to 1/16 steps made far cars grow in visible jumps (25-33% at a time) as
+      // you closed in, which looked like glitchy car movement.
+      const k = pxPerMetre / info.pxPerMetre;
       if (k < 0.06) continue;
 
       const spr = this.sprites[used++];

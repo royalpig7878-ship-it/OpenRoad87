@@ -73,5 +73,30 @@ console.log('--- pickups: what spawns ---');
   check('cash is the usual pickup on a healthy car', fine.money > fine.boost && fine.money > fine.fuel && fine.money > fine.repair);
 }
 
+console.log('--- pickups on the real game roads (short looping track) ---');
+{
+  // The game's roads loop every ~200,400 world units and the car covers 45 units per second per km/h. A spawn
+  // point further ahead than half the loop used to count as behind the player, so no pickup ever appeared.
+  const L = 200400, spawnAhead = 300 * 200 * 0.85, speed = 150 * 45;
+  const onGameRoad = (ahead: number | undefined, name: string) => {
+    const pm = new PickupManager(3, L, 0, seeded(5), ahead);
+    let pos = 0, seen = 0, prev = 0, okAhead = true;
+    for (let t = 0; t < 120; t += DT) {
+      pos = (pos + speed * DT) % L;
+      pm.update(DT, { position: pos, playerX: 5 }, { fuelFrac: 0.8, damage: 0 });
+      if (pm.items.length > prev) {
+        seen++;
+        const n = pm.items[pm.items.length - 1];
+        const a = (((n.z - pos) % L) + L) % L;
+        if (a <= 0 || a > L / 2) okAhead = false;
+      }
+      prev = pm.items.length;
+    }
+    check(name, seen >= 3 && okAhead, `(${seen} in 2 minutes at 150 km/h)`);
+  };
+  onGameRoad(spawnAhead, 'pickups show up on a game-sized road, ahead of the car (spawned at the draw distance)');
+  onGameRoad(undefined, 'even the default spawn distance is kept inside the loop on a short road');
+}
+
 console.log(failures === 0 ? '\nALL CHECKS PASSED' : `\n${failures} CHECK(S) FAILED`);
 process.exit(failures === 0 ? 0 : 1);

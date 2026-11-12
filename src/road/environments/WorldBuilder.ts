@@ -26,7 +26,10 @@ export function buildWorld(cfg: RoadConfig, envs: Environment[], art: Record<str
     zones.push({ env, start, end: builder.segments.length });
   }
   zones.forEach((z, zi) => {
-    for (let i = z.start; i < z.end; i++) builder.segments[i].zone = zi;
+    for (let i = z.start; i < z.end; i++) {
+      builder.segments[i].zone = zi;
+      builder.segments[i].fence = z.env.fence;
+    }
   });
   placeScenery(builder.segments, zones, art, cfg, { seed, transition: TRANSITION_SEGMENTS });
   return { segments: builder.segments, zones, trackLength: builder.trackLength };

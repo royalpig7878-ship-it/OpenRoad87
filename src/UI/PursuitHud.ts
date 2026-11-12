@@ -5,7 +5,7 @@ import { setTextCached } from './textUtil';
 import { kphToMph } from '../systems/units';
 
 /**
- * Police HUD: a heat meter while you speed, a flashing pursuit banner with arrest/escape progress during a
+ * Police HUD: a heat meter while a cop can see you, a flashing pursuit banner with arrest/escape progress during a
  * chase, a result card when it ends, and a red/blue siren glow on the windshield when cruisers are close.
  */
 export class PursuitHud {
@@ -49,8 +49,9 @@ export class PursuitHud {
 
     if (police.enabled) {
       if (police.state === 'idle') {
+        // Only shown when a cop can see you (or still remembers you): no cop around, no meter.
         const speeding = playerSpeedKph > police.speedLimitKph;
-        if (speeding || police.heat > 2) {
+        if (police.watched || police.heat > 2) {
           // Speed-limit sign.
           g.fillStyle(0xffffff, 1).fillRoundedRect(24, 38, 44, 44, 6).lineStyle(3, 0xd02020, 1).strokeRoundedRect(24, 38, 44, 44, 6);
           limit = `${Math.round(kphToMph(police.speedLimitKph))}`;
@@ -59,8 +60,8 @@ export class PursuitHud {
           g.fillStyle(0x000000, 0.75).fillRect(78, 46, 154, 36);
           g.fillStyle(0x2a2a34, 1).fillRect(84, 66, 142, 10);
           g.fillStyle(frac > 0.7 ? 0xff3030 : 0xffb020, 1).fillRect(84, 66, 142 * frac, 10);
-          title = speeding ? `SPEEDING ${Math.round(kphToMph(playerSpeedKph))} MPH` : 'HEAT';
-          titleColor = speeding ? '#ff6050' : Colors.yellow;
+          title = police.watched && speeding ? `COP SEES YOU  ${Math.round(kphToMph(playerSpeedKph))} MPH` : police.watched ? 'COP NEARBY' : 'HEAT';
+          titleColor = police.watched && speeding ? (flash ? '#ff6050' : '#ffffff') : Colors.yellow;
         }
       } else if (police.state === 'pursuit') {
         const color = flash ? 0xd02020 : 0x2050e0;

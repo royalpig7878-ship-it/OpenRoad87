@@ -8,6 +8,12 @@ export interface RoadPoint {
 /** One slice of road. Curve is lateral bend per segment, y change comes from p1/p2 heights. */
 import type { SceneryItem } from './environments/EnvironmentTypes';
 
+/** A wooden post-and-rail fence that follows the road edge (drawn by the road renderer, like the guardrail). */
+export interface RoadFence {
+  /** -1 = left only, 1 = right only, 0 = both sides. Stands on the guardrail line (outer edge of the shoulder). */
+  side: -1 | 0 | 1;
+}
+
 export interface RoadSegment {
   index: number;
   p1: RoadPoint;
@@ -20,6 +26,8 @@ export interface RoadSegment {
   barrier: boolean;
   /** Which side(s) the barrier stands on: 0 = both, -1 = left only, 1 = right only. */
   barrierSide: -1 | 0 | 1;
+  /** Wooden roadside fence running along the road (from the environment), or none. */
+  fence?: RoadFence;
   /** Set each frame: true when this segment is beyond the loop point relative to the camera. */
   looped: boolean;
   /** Set each frame: fog amount 0 (none)..1 (fully fogged). */

@@ -28,7 +28,11 @@ export const PICKUP_VALUE = {
 
 /** Spawn spacing, metres between pickups (random in this range). */
 const SPACING_M: [number, number] = [350, 800];
-/** New pickups appear this far ahead (metres): past the fog, so they come into view naturally. */
+/**
+ * New pickups appear this far ahead (metres) by default. The game passes its draw distance instead so they
+ * pop in at the horizon; either way it is capped below half the looping track, or a new pickup would count as
+ * already behind the player and be dropped at once (why none showed up on the short game roads before).
+ */
 const SPAWN_AHEAD_M = 450;
 /** At most this many waiting on the road at once. */
 const MAX_ACTIVE = 4;
@@ -58,11 +62,18 @@ export class PickupManager {
   private untilNext: number;
   private lastPos: number;
   private rand: () => number;
+  private spawnAheadWanted: number;
 
-  constructor(private lanes: number, private trackLength: number, startPosition = 0, rand: () => number = Math.random) {
+  constructor(private lanes: number, private trackLength: number, startPosition = 0, rand: () => number = Math.random, spawnAhead = SPAWN_AHEAD_M * UNITS_PER_METRE) {
     this.rand = rand;
+    this.spawnAheadWanted = spawnAhead;
     this.untilNext = this.spacing() * 0.4;
     this.lastPos = startPosition;
+  }
+
+  /** How far ahead (world units) new pickups appear. */
+  get spawnAhead(): number {
+    return Math.min(this.spawnAheadWanted, this.trackLength * 0.4);
   }
 
   /** Units ahead of `from` to `z` along the looping track (0..trackLength). */
@@ -121,7 +132,7 @@ export class PickupManager {
       this.untilNext = this.spacing();
       if (this.items.length < MAX_ACTIVE) {
         const lane = Math.floor(this.rand() * this.lanes);
-        const z = (player.position + SPAWN_AHEAD_M * UNITS_PER_METRE) % L;
+        const z = (player.position + this.spawnAhead) % L;
         this.items.push({ kind: this.pickKind(needs), z, x: -1 + (2 * lane + 1) / this.lanes, age: 0 });
       }
     }

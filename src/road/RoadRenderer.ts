@@ -3,6 +3,14 @@ import Phaser from 'phaser';
 import { CameraState, RoadConfig, RoadPalette, RoadPoint, RoadSegment } from './RoadTypes';
 import { lerpColor } from './RoadPalettes';
 
+/** Wooden fence colours and rail bands (fractions of the fence height). */
+const WOOD_RAIL = 0x7a5230;
+const WOOD_POST = 0x553819;
+const FENCE_RAILS: [number, number][] = [[0.36, 0.5], [0.7, 0.84]];
+/** World-unit heights of the guardrail and the wooden fence. */
+const RAIL_HEIGHT = 260;
+const FENCE_HEIGHT = 320;
+
 /** Where a road-standing object appears on screen (see RoadRenderer.projectSprite). */
 export interface SpriteProjection {
   x: number;
@@ -105,6 +113,24 @@ export class RoadRenderer {
    * `xUnits` road-half-widths from the centre line. Uses the projection from the latest render() call.
    * Returns null when it is behind the camera or beyond the draw distance.
    */
+  /**
+   * The guardrail or fence on one side of a segment at its near end, as drawn this frame: screen x and the screen
+   * y of its top. Null when that side has none or the segment is not drawn (behind the camera or a hill crest).
+   * Scenery uses it so a rail in front of an object hides the object's lower part instead of being painted over.
+   */
+  edgeRail(seg: RoadSegment, side: -1 | 1): { x: number; top: number } | null {
+    const p1 = seg.p1.screen;
+    // Far segments a pixel or less deep still count (only back-facing or hill-hidden ones do not), so the rail is a
+    // gap-free line: with gaps it flickered in and out in front of distant objects as the road moved.
+    if (seg.p1.camera.z <= this.cameraDepth || seg.p2.screen.y > p1.y || seg.p2.screen.y > seg.clip) return null;
+    const barrier = seg.barrier && (seg.barrierSide === 0 || seg.barrierSide === side);
+    const fence = !barrier && !!seg.fence && (seg.fence.side === 0 || seg.fence.side === side);
+    if (!barrier && !fence) return null;
+    const out = p1.w + p1.w / Math.max(6, 2 * this.cfg.lanes) + p1.w * 0.45;
+    const h = (p1.scale * (barrier ? RAIL_HEIGHT * 0.95 : FENCE_HEIGHT) * this.cfg.height) / 2;
+    return { x: p1.x + side * out, top: p1.y - h };
+  }
+
   projectSprite(cameraPosition: number, distance: number, xUnits: number): SpriteProjection | null {
     const { segmentLength, roadWidth, width } = this.cfg;
     const drawDistance = this.drawDistance;
@@ -252,7 +278,7 @@ export class RoadRenderer {
       if (seg.barrier) {
         const bx1 = p1.w + rumble1 + shoulder1;
         const bx2 = p2.w + rumble2 + shoulder2;
-        const rail = 260; // world-unit height of the rail
+        const rail = RAIL_HEIGHT;
         const h1 = (seg.p1.screen.scale * rail * height) / 2;
         const h2 = (seg.p2.screen.scale * rail * height) / 2;
         const col = lerpColor(pal.barrier[b], pf, fog);
@@ -271,6 +297,34 @@ export class RoadRenderer {
           g.fillTriangle(ax1, p1.y - h1 * 0.9, ax1, p1.y - h1 * 0.95, ax2, p2.y - h2 * 0.95);
           g.fillTriangle(ax1, p1.y - h1 * 0.9, ax2, p2.y - h2 * 0.95, ax2, p2.y - h2 * 0.9);
           if (b === 0) g.fillRect(ax1 - half1 / 2, p1.y - h1 * 0.95, Math.max(1, half1 / 2), h1 * 0.95);        }
+      }
+
+      // Wooden fence along the roadside (farm and forest), on any side without a guardrail.
+      if (seg.fence && p1.w >= 4 * lod) {
+        const f = seg.fence;
+        const fh = FENCE_HEIGHT;
+        const h1 = (seg.p1.screen.scale * fh * height) / 2;
+        const h2 = (seg.p2.screen.scale * fh * height) / 2;
+        const rail = lerpColor(WOOD_RAIL, pf, fog);
+        const post = lerpColor(WOOD_POST, pf, fog);
+        for (let si = 0; si < (f.side === 0 ? 2 : 1); si++) {
+          const side = f.side === 0 ? (si === 0 ? -1 : 1) : f.side;
+          if (seg.barrier && (seg.barrierSide === 0 || seg.barrierSide === side)) continue;
+          const ax1 = p1.x + side * (p1.w + rumble1 + shoulder1);
+          const ax2 = p2.x + side * (p2.w + rumble2 + shoulder2);
+          // Two rails running along the road.
+          g.fillStyle(rail, 1);
+          for (const [lo, hi] of FENCE_RAILS) {
+            g.fillTriangle(ax1, p1.y - h1 * lo, ax1, p1.y - h1 * hi, ax2, p2.y - h2 * hi);
+            g.fillTriangle(ax1, p1.y - h1 * lo, ax2, p2.y - h2 * hi, ax2, p2.y - h2 * lo);
+          }
+          // A post at the near end of every other segment.
+          if (seg.index % 2 === 0) {
+            const pw = Math.max(1, p1.w / 32);
+            g.fillStyle(post, 1);
+            g.fillRect(ax1 - pw / 2, p1.y - h1, pw, h1);
+          }
+        }
       }
     }
   }

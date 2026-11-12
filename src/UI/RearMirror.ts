@@ -168,7 +168,10 @@ export class RearMirror {
       const sp = car.texture && car.widthM && used < this.sprites.length && this.sprites[used].scene.textures.exists(car.texture) ? this.sprites[used] : null;
       if (sp) {
         used++;
-        this.placeCar(sp, car, cx, base, roadHalf / z, f);
+        // The art is a three-quarter front view with the body running back to the right, which is how a car behind
+        // and to your left looks. On the right of the mirror the body must run back to the left (toward the road's
+        // vanishing point), so flip it there.
+        this.placeCar(sp, car, cx, base, roadHalf / z, f, cx > vx);
         continue;
       }
       this.box(cx - cw, base - ch, cw * 2, ch, lerpColor(car.color, pal.fog, f));
@@ -184,8 +187,8 @@ export class RearMirror {
   }
 
   /** Draws a real front-view sprite for a vehicle, sized by its real width and cropped to the mirror glass. */
-  private placeCar(sp: Phaser.GameObjects.Image, car: RearCar, cx: number, base: number, roadHalfPx: number, f: number): void {
-    sp.setTexture(car.texture!);
+  private placeCar(sp: Phaser.GameObjects.Image, car: RearCar, cx: number, base: number, roadHalfPx: number, f: number, flip: boolean): void {
+    sp.setTexture(flip ? this.mirrored(car.texture!) : car.texture!);
     const tw = sp.width, th = sp.height;
     const artW = this.meta[car.texture!]?.bounds.w ?? tw;
     const k = (car.widthM! * roadHalfPx * 0.2) / artW;
@@ -205,6 +208,26 @@ export class RearMirror {
   }
 
   private time = 0;
+
+  /**
+   * A left-right mirrored copy of a texture, made once on first use. (Phaser's flipX combined with the crop used to
+   * keep cars inside the mirror glass made cropped, flipped cars vanish, so the flip is baked into a texture.)
+   */
+  private mirrored(key: string): string {
+    const out = key + '_mirrored';
+    const tm = this.gfx.scene.textures;
+    if (tm.exists(out)) return out;
+    const src = tm.get(key).getSourceImage() as HTMLImageElement | HTMLCanvasElement;
+    const c = document.createElement('canvas');
+    c.width = src.width;
+    c.height = src.height;
+    const ctx = c.getContext('2d')!;
+    ctx.translate(src.width, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(src, 0, 0);
+    tm.addCanvas(out, c);
+    return out;
+  }
 
   destroy(): void {
     this.gfx.destroy();

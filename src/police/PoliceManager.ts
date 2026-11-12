@@ -1,11 +1,13 @@
 import { WORLD_UNITS_PER_KPH } from '../systems/DrivingModel';
+import { roadEdges } from '../road/RoadLayout';
 import { Rng } from '../traffic/Rng';
 import { PLAYER_LENGTH_M, UNITS_PER_METRE } from '../traffic/TrafficData';
 import { TrafficCar, PlayerSample } from '../traffic/TrafficManager';
 import { HEAT_LIMIT, POLICE_LEVELS, POLICE_TYPE, PoliceLevel, SPEED_TOLERANCE, getPoliceLevel } from './PoliceData';
 
 export type PursuitState = 'idle' | 'pursuit' | 'busted' | 'escaped';
-export type PoliceMode = 'patrol' | 'chase' | 'block';
+/** patrol = cruising in traffic, parked = sitting on the shoulder watching (a speed trap), chase/block = pursuing. */
+export type PoliceMode = 'patrol' | 'parked' | 'chase' | 'block';
 
 /** A police cruiser. It is a TrafficCar too, so traffic and renderers can treat it like any vehicle. */
 export interface PoliceUnit extends TrafficCar {
@@ -16,6 +18,8 @@ export interface PoliceUnit extends TrafficCar {
   blockCooldown: number;
   /** While blocking: 'pass' = getting ahead, 'cut' = pulling into your lane and braking. */
   phase: 'pass' | 'cut';
+  /** Seconds of hard acceleration left after pulling out from the shoulder. */
+  launch: number;
 }
 
 export interface PoliceHit {
@@ -74,11 +78,23 @@ const EVADE_NEEDED = 7; // seconds out of reach to escape
 const ESCALATE_EVERY = 25; // seconds between reinforcements / difficulty steps
 const END_SCREEN_TIME = 4;
 const COOLDOWN_AFTER = 12;
+/** A cop sees you this far ahead of it (about 105 m) and this far after you pass it (about 30 m). */
+export const SIGHT_AHEAD = 40000;
+export const SIGHT_BEHIND = 11000;
+/** Heat a cop that saw you keeps for a moment after you leave its sight, and how fast it then fades. */
+const HEAT_FADE = 10;
+/** Speed traps: a cruiser parked on the shoulder every so often (seconds between them). */
+const PARKED_EVERY: [number, number] = [18, 35];
+/** Pulling out from the shoulder, a cruiser accelerates this many times harder for a few seconds. */
+const LAUNCH_BOOST = 3.5;
+const LAUNCH_SECONDS = 6;
 
 /**
- * Law enforcement: builds "heat" from speeding and reckless driving, runs patrol cars in traffic that
- * catch you speeding, and pursuits where cruisers chase, escalate, try to block you, and can arrest you
- * or lose you. Pure TypeScript (no Phaser). Cruisers are TrafficCars so the shared renderer draws them.
+ * Law enforcement. Police only react to what a cop can see: patrol cars cruise in traffic and speed traps sit
+ * parked on the shoulder. Speeding or crashing while one of them can see you builds "heat"; blowing past one
+ * well over the limit sends it after you at once. With no cop around you can drive as you like. Pursuits:
+ * cruisers chase, escalate, try to block you, and can arrest you or lose you. Pure TypeScript (no Phaser).
+ * Cruisers are TrafficCars so the shared renderer draws them.
  */
 export class PoliceManager {
   readonly units: PoliceUnit[] = [];
@@ -96,6 +112,10 @@ export class PoliceManager {
   enabled = true;
   level: PoliceLevel;
   lastResult?: PursuitResult;
+  /** A cop can see you right now (idle only): speeding now builds heat. */
+  watched = false;
+  /** Distance to the nearest cop ahead (world units), Infinity if none: for a "cop ahead" warning. */
+  copAhead = Infinity;
 
   private rng: Rng;
   private clock = 0;
@@ -104,6 +124,8 @@ export class PoliceManager {
   private patrolTimer = 10;
   private escalateTimer = 0;
   private evadeTime = 0;
+  private parkedTimer = 8;
+  private unseenTime = 0;
 
   constructor(private opts: PoliceOptions) {
     this.rng = new Rng(opts.seed ?? 1977);
@@ -113,7 +135,7 @@ export class PoliceManager {
       this.units.push({
         id: 1000 + i, active: false, type: POLICE_TYPE, z: 0, x: 0, targetX: 0, speedKph: 0, cruiseKph: 0,
         prevRel: 0, hitCooldown: 0, laneCooldown: 0, passed: false, texture: 'police_cruiser_back_off',
-        mode: 'patrol', sirens: false, modeTime: 0, blockCooldown: 0, phase: 'pass',
+        mode: 'patrol', sirens: false, modeTime: 0, blockCooldown: 0, phase: 'pass', launch: 0,
       });
     }
   }
@@ -139,7 +161,10 @@ export class PoliceManager {
     this.stage = 1;
     this.cooldown = 0;
     this.patrolTimer = 10;
+    this.parkedTimer = 8;
     this.evadeTime = 0;
+    this.watched = false;
+    this.copAhead = Infinity;
   }
 
   get activeUnits(): PoliceUnit[] {
@@ -156,7 +181,7 @@ export class PoliceManager {
   /** True when no active unit is within the escape distance of the player (allocation-free). */
   private allFar(player: PlayerSample): boolean {
     for (const u of this.units) {
-      if (!u.active) continue;
+      if (!u.active || u.mode === 'parked') continue;
       const r = this.rel(u.z, player.position);
       if (r >= -ESCAPE_DISTANCE && r <= ESCAPE_DISTANCE) return false;
     }
@@ -202,6 +227,7 @@ export class PoliceManager {
     u.modeTime = 0;
     u.blockCooldown = 3 + this.rng.next() * 4;
     u.phase = 'pass';
+    u.launch = 0;
     u.hitCooldown = 0;
     u.prevRel = 0;
     u.passed = false;
@@ -271,39 +297,92 @@ export class PoliceManager {
 
   // -------------------------------------------------------------------- idle
 
+  /** Puts a cruiser on the shoulder at `z`, lights off, facing the way traffic goes. */
+  private park(u: PoliceUnit, z: number, side: -1 | 1): void {
+    this.place(u, z, 0, 0, 'parked', false);
+    const e = roadEdges(this.opts.lanes);
+    u.x = u.targetX = side * (e.rumble + 0.3);
+  }
+
+  /** Sends a watching cop (patrol or parked) after the player. */
+  private pullOut(u: PoliceUnit): void {
+    if (u.mode === 'parked') {
+      u.launch = LAUNCH_SECONDS;
+      u.targetX = this.laneX(u.x < 0 ? 0 : this.opts.lanes - 1);
+    }
+    u.mode = 'chase';
+    u.sirens = true;
+    u.modeTime = 0;
+  }
+
+  /** Can this idle cop see the player? (Close ahead of it, or just passed.) */
+  private sees(u: PoliceUnit, player: PlayerSample): boolean {
+    const rel = this.rel(u.z, player.position); // > 0: cop is ahead of the player
+    return rel <= SIGHT_AHEAD && rel >= -SIGHT_BEHIND;
+  }
+
   private updateIdle(dt: number, player: PlayerSample, inc: Incidents, ev: PoliceEvents): void {
     const over = player.speedKph - (this.speedLimitKph + SPEED_TOLERANCE);
+    const reach = this.opts.drawDistance * this.opts.segmentLength * 0.85;
+
+    // Spawn: a patrol car cruising in traffic now and then, and speed traps parked on the shoulder.
+    this.patrolTimer -= dt;
+    this.parkedTimer -= dt;
     if (this.cooldown <= 0) {
+      if (this.patrolTimer <= 0 && !this.units.some((u) => u.active && u.mode === 'patrol')) {
+        const u = this.free();
+        if (u) this.place(u, player.position + reach, this.rng.int(this.opts.lanes), this.speedLimitKph * 0.9, 'patrol', false);
+        this.patrolTimer = 15 + this.rng.next() * 20;
+      }
+      if (this.parkedTimer <= 0 && !this.units.some((u) => u.active && u.mode === 'parked')) {
+        const u = this.free();
+        if (u) this.park(u, player.position + reach, this.rng.next() < 0.75 ? 1 : -1);
+        this.parkedTimer = this.rng.range(PARKED_EVERY[0], PARKED_EVERY[1]);
+      }
+    }
+
+    // Who can see the player?
+    let watcher: PoliceUnit | undefined;
+    let watcherDist = Infinity;
+    this.copAhead = Infinity;
+    for (const u of this.units) {
+      if (!u.active || (u.mode !== 'patrol' && u.mode !== 'parked')) continue;
+      if (u.mode === 'patrol') this.moveUnit(u, dt, player, 'patrol');
+      const rel = this.rel(u.z, player.position);
+      if (rel > 0) this.copAhead = Math.min(this.copAhead, rel);
+      if (this.sees(u, player) && Math.abs(rel) < watcherDist) {
+        watcher = u;
+        watcherDist = Math.abs(rel);
+      }
+    }
+    this.watched = !!watcher && this.cooldown <= 0;
+
+    // Heat only builds while a cop can see you. Out of sight it lingers a moment, then fades.
+    if (this.watched) {
+      this.unseenTime = 0;
       if (over > 0) this.heat += (4 + over * 0.08) * dt * this.level.heatGain;
       else this.heat -= 6 * dt;
-      // Reckless driving adds heat at once.
+      // Reckless driving in front of a cop adds heat at once.
       this.heat += inc.trafficHits * 28 + inc.barrierHits * 8 + inc.nearMisses * 2.5;
-    } else this.heat = Math.max(0, this.heat - 12 * dt);
+    } else {
+      this.unseenTime += dt;
+      if (this.unseenTime > 2 || this.cooldown > 0) this.heat -= HEAT_FADE * dt;
+    }
     this.heat = Math.min(HEAT_LIMIT, Math.max(0, this.heat));
 
-    // Patrol cars cruise in the traffic flow; passing one at speed starts a pursuit.
-    this.patrolTimer -= dt;
-    const patrol = this.units.find((u) => u.active && u.mode === 'patrol');
-    if (!patrol && this.patrolTimer <= 0 && this.cooldown <= 0) {
-      const u = this.free();
-      if (u) {
-        const reach = this.opts.drawDistance * this.opts.segmentLength * 0.85;
-        this.place(u, player.position + reach, this.rng.int(this.opts.lanes), this.speedLimitKph * 0.9, 'patrol', false);
-      }
-      this.patrolTimer = 15 + this.rng.next() * 20;
-    }
     for (const u of this.units) {
-      if (!u.active || u.mode !== 'patrol') continue;
-      this.moveUnit(u, dt, player, 'patrol');
+      if (!u.active || (u.mode !== 'patrol' && u.mode !== 'parked')) continue;
       const rel = this.rel(u.z, player.position);
+      // Blowing past a cop well over the limit: it comes after you straight away.
       const crossed = u.prevRel > 0 && rel <= 0 && u.prevRel < 4000;
-      if (crossed && Math.abs(u.x - player.playerX) < 1.1 && player.speedKph > this.speedLimitKph + SPEED_TOLERANCE * 0.5 && this.cooldown <= 0) {
+      const near = Math.abs(u.x - player.playerX) < (u.mode === 'parked' ? 2.2 : 1.1);
+      if (crossed && near && player.speedKph > this.speedLimitKph + SPEED_TOLERANCE * 0.5 && this.cooldown <= 0) {
         this.startPursuit(player, ev, u);
         return;
       }
       if (rel < -9000) u.active = false;
     }
-    if (this.heat >= HEAT_LIMIT) this.startPursuit(player, ev);
+    if (this.heat >= HEAT_LIMIT && watcher) this.startPursuit(player, ev, watcher);
   }
 
   // ---------------------------------------------------------------- pursuit
@@ -316,14 +395,13 @@ export class PoliceManager {
     this.stage = 1;
     this.escalateTimer = ESCALATE_EVERY;
     this.lastResult = undefined;
-    if (patrol) {
-      patrol.mode = 'chase';
-      patrol.sirens = true;
-    } else {
+    this.watched = false;
+    if (patrol) this.pullOut(patrol);
+    else {
       const u = this.free();
       if (u) this.place(u, player.position - this.rng.range(9000, 13000), this.laneIndex(player.playerX), Math.min(this.level.topKph, player.speedKph + 15), 'chase', true);
     }
-    // Remove any leftover patrol cars that were not the one that caught you.
+    // Leftover patrol cars leave; speed traps stay parked (and can join in when you pass them).
     for (const u of this.units) if (u.active && u.mode === 'patrol') u.active = false;
     if (ev) ev.started = true;
   }
@@ -340,7 +418,7 @@ export class PoliceManager {
     if (this.escalateTimer <= 0) {
       this.escalateTimer = ESCALATE_EVERY;
       this.stage = Math.min(4, this.stage + 1);
-      if (this.activeCount < L.maxUnits) {
+      if (this.chaserCount() < L.maxUnits) {
         const u = this.free();
         if (u) {
           this.place(u, player.position - this.rng.range(10000, 13000), this.rng.int(this.opts.lanes), Math.min(this.topSpeed(), player.speedKph + 20), 'chase', true);
@@ -352,7 +430,15 @@ export class PoliceManager {
     let nearest = Infinity;
     let closeUnits = 0;
     for (const u of this.units) {
-      if (!u.active) continue;
+      if (!u.active || u.mode !== 'parked') continue;
+      const rel = this.rel(u.z, player.position);
+      if (u.prevRel > 0 && rel <= 0 && u.prevRel < 4000 && this.chaserCount() < L.maxUnits) {
+        this.pullOut(u);
+        ev.reinforcement = true;
+      } else if (rel < -9000) u.active = false;
+    }
+    for (const u of this.units) {
+      if (!u.active || u.mode === 'parked') continue;
       this.moveUnit(u, dt, player, 'pursue');
       const rel = this.rel(u.z, player.position);
       const dist = Math.abs(rel);
@@ -374,6 +460,13 @@ export class PoliceManager {
 
     if (this.bust >= 1) this.endPursuit('busted', ev);
     else if (this.evade >= 1) this.endPursuit('escaped', ev);
+  }
+
+  /** Cruisers actually chasing (not parked on the shoulder). */
+  private chaserCount(): number {
+    let n = 0;
+    for (const u of this.units) if (u.active && u.mode !== 'parked') n++;
+    return n;
   }
 
   private topSpeed(): number {
@@ -405,6 +498,7 @@ export class PoliceManager {
     this.bust = this.evade = this.evadeTime = 0;
     this.cooldown = COOLDOWN_AFTER;
     this.patrolTimer = 20;
+    this.parkedTimer = 20;
   }
 
   // ---------------------------------------------------------------- movement
@@ -412,6 +506,11 @@ export class PoliceManager {
   /** Moves one cruiser. `intent`: patrol (cruise at the limit), pursue (chase/block), hold (stay back). */
   private moveUnit(u: PoliceUnit, dt: number, player: PlayerSample, intent: 'patrol' | 'pursue' | 'hold'): void {
     const L = this.level;
+    if (u.mode === 'parked') {
+      u.speedKph = 0;
+      return;
+    }
+    u.launch = Math.max(0, u.launch - dt);
     const rel = this.rel(u.z, player.position); // negative = behind the player
     const gap = -rel;
     let desired: number;
@@ -481,7 +580,7 @@ export class PoliceManager {
     }
 
     desired = Math.max(0, desired);
-    const rate = desired < u.speedKph ? L.brake : L.accel;
+    const rate = desired < u.speedKph ? L.brake : L.accel * (u.launch > 0 ? LAUNCH_BOOST : 1);
     u.speedKph += Math.max(-rate * dt, Math.min(rate * dt, desired - u.speedKph));
     u.targetX = targetX;
     u.x += Math.max(-LANE_RATE * dt, Math.min(LANE_RATE * dt, targetX - u.x));

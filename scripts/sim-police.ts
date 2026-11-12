@@ -46,27 +46,110 @@ function run(m: PoliceManager, seconds: number, speed: number, x = 0, setup?: (p
   return r;
 }
 
-console.log('--- heat and speeding ---');
+/** No cops anywhere: removes every idle cruiser each frame. */
+const noCops = (_p: PlayerSample, _t: number, mm: PoliceManager) => { for (const u of mm.units) if (u.mode === 'patrol' || u.mode === 'parked') u.active = false; };
+/** Parks a speed-trap cruiser on the right shoulder `ahead` world units in front of the player. */
+const trap = (m: PoliceManager, p: PlayerSample, ahead: number) => {
+  const u = m.units.find((x) => !x.active)!;
+  (m as unknown as { park: (u: unknown, z: number, side: number) => void }).park(u, p.position + ahead, 1);
+  u.prevRel = ahead;
+  return u;
+};
+
+console.log('--- police only react to what they can see ---');
 {
-  const ok = make(2); run(ok, 120, 120 + SPEED_TOLERANCE - 1);
-  check('driving at the limit (plus tolerance) never attracts police', ok.heat === 0 && ok.state === 'idle');
-  const m = make(2);
-  let peak = 0;
-  const r = run(m, 60, 200, 0, (_p, _t, mm) => { peak = Math.max(peak, mm.heat); });
-  check('speeding builds heat and starts a pursuit', r.started !== undefined, `(started at ${r.started?.toFixed(1)}s, peak heat ${peak.toFixed(0)})`);
-  const slow = make(2); slow.heat = 60;
-  run(slow, 10, 100);
-  check('heat cools when you slow down', slow.heat < 10, `(${slow.heat.toFixed(1)})`);
-  const reck = make(2);
+  const free = make(2);
+  const r = run(free, 90, 260, 0, noCops);
+  check('with no cop around you can speed as much as you like', r.started === undefined && free.heat === 0);
+  const crash = make(2);
   const p: PlayerSample = { position: 0, playerX: 0, speedKph: 100 };
-  for (let i = 0; i < 4; i++) reck.update(DT, p, { trafficHits: 1, barrierHits: 0, nearMisses: 0 });
-  check('repeated crashes alone start a pursuit', reck.state === 'pursuit');
-  const near = make(2);
-  for (let i = 0; i < 10; i++) near.update(DT, p, { trafficHits: 0, barrierHits: 0, nearMisses: 1 });
-  check('a few near misses add a little heat but not a pursuit', near.heat > 10 && near.state === 'idle', `(${near.heat.toFixed(0)})`);
-  const higher = make(4), lower = make(1);
-  run(higher, 8, 190); run(lower, 8, 190);
-  check('higher police levels notice speeding sooner', higher.heat > lower.heat, `(${higher.heat.toFixed(0)} vs ${lower.heat.toFixed(0)})`);
+  for (let i = 0; i < 6; i++) crash.update(DT, p, { trafficHits: 1, barrierHits: 0, nearMisses: 0 });
+  check('crashing with no cop around does not start a pursuit', crash.state === 'idle' && crash.heat === 0);
+  const ok = make(2); run(ok, 120, 120 + SPEED_TOLERANCE - 1);
+  check('driving at the limit (plus tolerance) never attracts police, even past cops', ok.heat === 0 && ok.state === 'idle');
+}
+
+console.log('--- speed traps parked on the shoulder ---');
+{
+  const m = make(2);
+  let parkedSeen = false, onShoulder = true, still = true;
+  run(m, 70, 110, 0, (_p, _t, mm) => {
+    for (const u of mm.units) if (u.active && u.mode === 'parked') {
+      parkedSeen = true;
+      if (Math.abs(u.x) < 1.05) onShoulder = false;
+      if (u.speedKph !== 0 || u.sirens) still = false;
+    }
+  });
+  check('cruisers sit parked on the shoulder now and then', parkedSeen);
+  check('a parked cruiser is off the road, stopped, lights off', parkedSeen && onShoulder && still);
+
+  // Blow past a parked cop: it pulls out with the lights on and comes after you.
+  const fast = make(2, 7);
+  const pf: PlayerSample = { position: 1000, playerX: 0, speedKph: 190 };
+  const cop = trap(fast, pf, 3000);
+  let started = false, catchUp = 0;
+  for (let t = 0; t < 12; t += DT) {
+    pf.position += pf.speedKph * WORLD_UNITS_PER_KPH * DT;
+    const ev = fast.update(DT, pf);
+    if (ev.started) started = true;
+    if (started) catchUp = Math.max(catchUp, cop.speedKph);
+    for (const u of fast.units) if (u !== cop && (u.mode === 'patrol' || u.mode === 'parked')) u.active = false;
+  }
+  check('speeding past a parked cop starts a pursuit, and that cop is the one chasing', started && cop.active && cop.mode !== 'parked' && cop.sirens);
+  check('it pulls out hard and gets up to speed', catchUp > 150, `(${catchUp.toFixed(0)} km/h within 12 s)`);
+
+  const legal = make(2, 7);
+  const pl: PlayerSample = { position: 1000, playerX: 0, speedKph: 125 };
+  trap(legal, pl, 3000);
+  for (let t = 0; t < 6; t += DT) { pl.position += pl.speedKph * WORLD_UNITS_PER_KPH * DT; legal.update(DT, pl); }
+  check('driving past a parked cop at the limit is fine', legal.state === 'idle');
+
+  // Heat while in sight.
+  const seen = make(2, 8);
+  const ps: PlayerSample = { position: 1000, playerX: 0, speedKph: 175 };
+  const c2 = trap(seen, ps, 38000);
+  let watchedAt = -1;
+  for (let t = 0; t < 1.5; t += DT) { ps.position += ps.speedKph * WORLD_UNITS_PER_KPH * DT; seen.update(DT, ps); if (seen.watched && watchedAt < 0) watchedAt = t; }
+  check('a cop up ahead sees you speeding: heat builds', seen.watched && seen.heat > 3 && c2.mode === 'parked', `(heat ${seen.heat.toFixed(1)})`);
+  check('the cop ahead is reported for a warning', seen.copAhead < 40000);
+  seen.units.forEach((u) => (u.active = false));
+  const h0 = seen.heat;
+  for (let t = 0; t < 6; t += DT) { ps.position += ps.speedKph * WORLD_UNITS_PER_KPH * DT; seen.update(DT, ps); noCops(ps, t, seen); }
+  check('out of sight the heat fades away', seen.heat < h0 && seen.heat === 0 && !seen.watched, `(${h0.toFixed(1)} -> ${seen.heat.toFixed(1)})`);
+
+  const reck = make(2, 9);
+  const pr: PlayerSample = { position: 1000, playerX: 0, speedKph: 100 };
+  trap(reck, pr, 20000);
+  for (let i = 0; i < 4; i++) reck.update(DT, pr, { trafficHits: 1, barrierHits: 0, nearMisses: 0 });
+  check('crashing in front of a cop starts a pursuit', reck.state === 'pursuit');
+  const near = make(2, 9);
+  trap(near, pr, 20000);
+  for (let i = 0; i < 10; i++) near.update(DT, pr, { trafficHits: 0, barrierHits: 0, nearMisses: 1 });
+  check('a few near misses in view add a little heat but not a pursuit', near.heat > 10 && near.state === 'idle', `(${near.heat.toFixed(0)})`);
+
+  const heatAfter = (level: number) => {
+    const m2 = make(level, 10);
+    const q: PlayerSample = { position: 1000, playerX: 0, speedKph: 190 };
+    const u = trap(m2, q, 30000);
+    for (let t = 0; t < 1; t += DT) { m2.update(DT, q); u.z = q.position + 30000; }
+    return m2.heat;
+  };
+  check('higher police levels notice speeding sooner', heatAfter(4) > heatAfter(1), `(${heatAfter(4).toFixed(1)} vs ${heatAfter(1).toFixed(1)})`);
+
+  // In a pursuit, passing a parked cop brings it in as a reinforcement (when there is room).
+  const pur = make(3, 11);
+  const pp: PlayerSample = { position: 1000, playerX: 0, speedKph: 200 };
+  pur.startPursuit(pp);
+  const extra = trap(pur, pp, 2500);
+  let joined = false;
+  for (let t = 0; t < 3; t += DT) { pp.position += pp.speedKph * WORLD_UNITS_PER_KPH * DT; const ev = pur.update(DT, pp); if (ev.reinforcement && extra.mode !== 'parked') joined = true; pur.bust = 0; }
+  check('during a chase, a speed trap you pass joins in', joined);
+  check('parked cops do not stop you escaping', (() => {
+    const e = make(1, 12); const q: PlayerSample = { position: 1000, playerX: 0, speedKph: 300 };
+    e.startPursuit(q);
+    const r2 = run(e, 60, 300, 0, (pl2, t, mm) => { if (t === 0) { mm.startPursuit(pl2); } if (t > 0.5 && t < 0.52) trap(mm, pl2, 30000); });
+    return r2.result?.outcome === 'escaped';
+  })());
 }
 
 console.log('--- patrol cars in traffic ---');

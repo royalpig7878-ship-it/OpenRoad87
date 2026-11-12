@@ -441,7 +441,8 @@ export class RoadTestScene extends Phaser.Scene {
     this.traffic.extras = this.police.units;
     this.policeView = new TrafficRenderer(this, this.road, this.cfg, this.cache.json.get('traffic_meta') as Record<string, TrafficArtInfo>, this.police.units.length);
     this.scenery = new SceneryRenderer(this, this.road, this.cfg, this.sceneryArt);
-    this.pickups = new PickupManager(this.cfg.lanes, this.world.trackLength, this.model.state.position);
+    // New pickups appear just inside the draw distance, where the road fades in.
+    this.pickups = new PickupManager(this.cfg.lanes, this.world.trackLength, this.model.state.position, Math.random, this.cfg.drawDistance * this.cfg.segmentLength * 0.85);
     this.pickupView = new PickupRenderer(this, this.road, this.cfg);
     this.worldSceneryKeys = sceneryTexturesOf(choice.envs);
     this.lastZone = -1;
@@ -659,7 +660,7 @@ export class RoadTestScene extends Phaser.Scene {
       }
       if (ev.hits.length === 0 && ev.nearMisses.length > 0) this.showPopup(`NEAR MISS  ${this.traffic.stats.nearMisses}`, Colors.yellow);
     }
-    // Police: speeding and reckless driving build heat; patrols and pursuits run here.
+    // Police: speeding or crashing where a cop can see you builds heat; patrols, speed traps and pursuits run here.
     const here0 = blendAt(this.world, seg.index);
     this.police.setSpeedLimit(mphToKph(this.world.zones[here0.zone].env.speedLimitMph));
     const pev = this.police.update(dt, player, { trafficHits: trafficHitsNow, barrierHits: s.events.includes('barrier_hit') ? 1 : 0, nearMisses: nearMissesNow });
