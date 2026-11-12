@@ -574,7 +574,7 @@ export class RoadTestScene extends Phaser.Scene {
     const kick = Math.round(Math.max(rumble, this.shake));
     const jolt = kick === 0 ? 0 : (this.game.getFrame() % 2 === 0 ? kick : -kick);
     this.gfx.setY(jolt);
-    this.backdrop.update({ env: envHere, time: timeHere }, { env: envNext, time: this.timeFor(envNext) }, here.t, seg.curve * Math.min(1, s.speedKph / REFERENCE_SPEED_KPH) * dt, jolt);
+    this.backdrop.update({ env: envHere, time: timeHere }, { env: envNext, time: this.timeFor(envNext) }, here.t, seg.curve * Math.min(1, s.speedKph / REFERENCE_SPEED_KPH) * dt, jolt, this.road.yawPixels(s.heading));
 
     // Weather follows the time of day (storms), blended across zone boundaries; it thickens the road fog too.
     const wTarget = lerpWeather(weatherForTime(timeHere), weatherForTime(this.timeFor(envNext)), here.t);
@@ -588,7 +588,7 @@ export class RoadTestScene extends Phaser.Scene {
       trackLength: this.road.trackLength, unitsPerMetre: UNITS_PER_METRE, rain: this.weather.level.rain,
       traffic: this.trafficOn ? this.traffic.cars : [], police: this.police.units,
     }));
-    this.road.render({ position: s.position, playerX: s.playerX });
+    this.road.render({ position: s.position, playerX: s.playerX, heading: s.heading });
     this.scenery.setTimeOfDay(envHere.fixedLook ? 'day' : timeHere);
     this.scenery.update(jolt);
     this.trafficView.setTimeOfDay(envHere.fixedLook ? 'day' : timeHere);

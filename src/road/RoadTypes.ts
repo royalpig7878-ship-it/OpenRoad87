@@ -72,4 +72,6 @@ export interface CameraState {
   position: number;
   /** Lateral player position: -1 = left road edge, +1 = right road edge. */
   playerX: number;
+  /** Which way the car points relative to the road (DrivingState.heading); turns the view. */
+  heading?: number;
 }

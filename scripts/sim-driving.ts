@@ -75,10 +75,28 @@ console.log('--- steering & curves ---');
   for (let i = 0; i < 60 * 2; i++) hard.update(DT, inp({ throttle: 0.7 }), { curve: 4, barrier: false });
   check('hands-off in a curve at 220 km/h pushes car off road', Math.abs(hard.state.playerX) > edges.road, `(x=${hard.state.playerX.toFixed(2)})`);
 
+  // No auto-follow: hands off, even at 90 km/h the car goes straight on and runs wide (just later than at 220).
   const slow = new DrivingModel(t0('night_hawk'), edges, 1e9);
   slow.state.speedKph = 90; slow.transmission.gear = 3;
-  for (let i = 0; i < 60 * 3; i++) slow.update(DT, inp({ throttle: 0.2 }), { curve: 4, barrier: false });
-  check('hands-off at 90 km/h in same curve is manageable', Math.abs(slow.state.playerX) < Math.abs(hard.state.playerX), `(x=${slow.state.playerX.toFixed(2)})`);
+  let slowOff = -1;
+  for (let i = 0; i < 60 * 6 && slowOff < 0; i++) { slow.update(DT, inp({ throttle: 0.2 }), { curve: 4, barrier: false }); if (Math.abs(slow.state.playerX) > edges.road) slowOff = i / 60; }
+  check('hands-off at 90 km/h the car does not follow the bend: it leaves the road within 3 s', slowOff > 0 && slowOff < 3, `(${slowOff.toFixed(1)}s)`);
+  // ...but a driver who steers holds the same bend.
+  const held = new DrivingModel(t0('night_hawk'), edges, 1e9);
+  let worst = 0;
+  for (let i = 0; i < 60 * 6; i++) {
+    held.state.speedKph = 90;
+    const steer = Math.max(-1, Math.min(1, -held.state.playerX * 2 - held.state.heading * 25));
+    held.update(DT, inp({ throttle: 0.3, steer }), { curve: 4, barrier: false });
+    worst = Math.max(worst, Math.abs(held.state.playerX));
+  }
+  check('steering through the same bend at 90 km/h keeps the car in its lane', worst < 0.5, `(worst |x| ${worst.toFixed(2)})`);
+  // On a straight the car straightens up by itself after a lane change (no endless drift).
+  const lane = new DrivingModel(t0('vortex_gt'), edges, 1e9);
+  for (let i = 0; i < 60 * 3; i++) { lane.state.speedKph = 120; lane.update(DT, inp({ throttle: 0.4, steer: i < 30 ? 1 : 0 }), straight); }
+  const xAfter = lane.state.playerX;
+  for (let i = 0; i < 60; i++) { lane.state.speedKph = 120; lane.update(DT, inp({ throttle: 0.4 }), straight); }
+  check('on a straight the car straightens up after a lane change', Math.abs(lane.state.playerX - xAfter) < 0.02 && xAfter > 0.3, `(x ${xAfter.toFixed(2)} -> ${lane.state.playerX.toFixed(2)})`);
 
   // Holding only the throttle through a bend: the car goes straight on, leaves the road and crashes into the rail.
   for (const [kph, curve] of [[80, 2], [120, 4], [160, 6]] as const) {

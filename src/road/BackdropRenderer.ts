@@ -28,10 +28,10 @@ class Backdrop {
     });
   }
 
-  scroll(curveShift: number): void {
+  scroll(curveShift: number, yawPx = 0): void {
     this.layers.forEach((l, i) => {
       this.offsets[i] += curveShift * this.parallax[i] * 300;
-      l.tilePositionX = Math.round(this.offsets[i]);
+      l.tilePositionX = Math.round(this.offsets[i] + yawPx);
     });
   }
 
@@ -69,11 +69,11 @@ export class BackdropBlender {
   }
 
   /** `a` is drawn fully; `b` fades in over it with weight `t` (0 = not at all). */
-  update(a: { env: Environment; time: TimeOfDay }, b: { env: Environment; time: TimeOfDay }, t: number, curveShift: number, jolt: number): void {
+  update(a: { env: Environment; time: TimeOfDay }, b: { env: Environment; time: TimeOfDay }, t: number, curveShift: number, jolt: number, yawPx = 0): void {
     const bdA = this.get(a.env, a.time);
     const bdB = t > 0.001 ? this.get(b.env, b.time) : null;
     for (const bd of this.cache.values()) {
-      bd.scroll(curveShift);
+      bd.scroll(curveShift, yawPx);
       if (bd !== bdA && bd !== bdB) bd.show(0, 0, jolt);
     }
     bdA.show(1, 0, jolt);

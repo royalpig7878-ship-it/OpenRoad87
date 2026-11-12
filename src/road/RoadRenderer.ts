@@ -1,3 +1,4 @@
+import { UNITS_PER_METRE } from '../traffic/TrafficData';
 import Phaser from 'phaser';
 import { CameraState, RoadConfig, RoadPalette, RoadPoint, RoadSegment } from './RoadTypes';
 import { lerpColor } from './RoadPalettes';
@@ -126,6 +127,16 @@ export class RoadRenderer {
     };
   }
 
+  /** Car heading (road-half-widths per metre) as sideways world units per world unit forward. */
+  private headingSlope(heading: number): number {
+    return (heading * this.cfg.roadWidth) / UNITS_PER_METRE;
+  }
+
+  /** How far (screen pixels) a heading swings things at the horizon; the backdrop moves by this much. */
+  yawPixels(heading: number): number {
+    return (this.headingSlope(heading) * this.cameraDepth * this.cfg.width) / 2;
+  }
+
   /** Reused each frame: the segments that are visible, nearest first. */
   private visibleBuf: RoadSegment[] = [];
 
@@ -156,7 +167,8 @@ export class RoadRenderer {
     g.fillRect(0, horizonY, width, height - horizonY);
 
     let x = 0;
-    let dx = -(base.curve * basePercent);
+    // The camera looks where the car points: a heading off the road's direction swings the whole road sideways.
+    let dx = -(base.curve * basePercent) - this.headingSlope(cam.heading ?? 0) * segmentLength;
     let maxY = height;
 
     // Project nearest -> farthest, accumulating curve offsets. Visible segments go into a reused buffer (no per-frame garbage).

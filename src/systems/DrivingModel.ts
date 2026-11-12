@@ -30,6 +30,11 @@ export interface DrivingState {
   /** Current wheel angle -1..1 after inertia and speed-sensitivity. */
   steerAngle: number;
   lateralVel: number;
+  /**
+   * Which way the car points relative to the road, in road-half-widths of sideways travel per metre driven
+   * (0 = along the road). The road turns under the car in a bend; only steering turns the car.
+   */
+  heading: number;
   rpm: number;
   gear: number;
   throttle: number;
@@ -46,6 +51,14 @@ export interface DrivingState {
   /** Events raised during the most recent update. */
   events: DrivingEvent[];
 }
+
+/** How fast a bend turns the road away under the car: heading change per metre driven per unit of curve. */
+export const BEND_TURN = 3.7e-4;
+/** Heading change per second at full lock (scaled down at speed and by grip/handling). */
+const STEER_YAW = 0.12;
+/** How quickly the car straightens up on a straight (per second). */
+const HEADING_SETTLE = 2.5;
+const MAX_HEADING = 0.06;
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -67,7 +80,7 @@ export class DrivingModel {
   constructor(private spec: VehicleSpec, private edges: RoadEdges, private trackLength: number, startFuel = spec.fuelCapacity, startDamage = 0) {
     this.transmission = new Transmission(spec);
     this.state = {
-      speedKph: 0, position: 0, playerX: 0, steerAngle: 0, lateralVel: 0, rpm: spec.idleRpm, gear: 1,
+      speedKph: 0, position: 0, playerX: 0, steerAngle: 0, lateralVel: 0, heading: 0, rpm: spec.idleRpm, gear: 1,
       throttle: 0, brake: 0, fuel: startFuel, damage: startDamage, surface: 'road', skidding: false,
       shifting: false, distanceKm: 0, events: [],
     };
@@ -87,6 +100,7 @@ export class DrivingModel {
     this.state.damage = damage;
     this.state.steerAngle = 0;
     this.state.lateralVel = 0;
+    this.state.heading = 0;
   }
 
   /** Use a different road (e.g. another environment): resets position to the start line. */
@@ -94,6 +108,7 @@ export class DrivingModel {
     this.trackLength = length;
     this.state.position = 0;
     this.state.playerX = 0;
+    this.state.heading = 0;
   }
 
   refuel(): void {
@@ -174,19 +189,24 @@ export class DrivingModel {
     const toward = Math.abs(steerTarget) > Math.abs(s.steerAngle) && Math.sign(steerTarget) === Math.sign(s.steerAngle || steerTarget);
     s.steerAngle = approach(s.steerAngle, steerTarget, dt * (toward ? 4.5 : 7) * (0.7 + 0.5 * spec.handling));
 
+    // The car has its own heading. In a bend the road turns under it while the car keeps going straight, so with
+    // no steering it runs wide and off the road. Steering turns the car. On straights the car straightens up on its
+    // own (lane changes stay arcade-easy); in bends it does not, because that would mean following the road.
+    const mps = s.speedKph / 3.6;
     const handlingGain = 0.7 + 0.5 * spec.handling;
-    const steerLateral = s.steerAngle * speedRef * 2.6 * handlingGain * grip;
-    // Hands off the wheel the car goes straight on while the road bends away, so it drifts out toward the rail.
-    // The push is felt from low speed too (not only squared), so a gentle bend still carries you off the road.
-    const centrifugal = (road.curve * speedRef * (0.4 + 0.6 * speedRef) * 0.65 * (1.35 - 0.6 * spec.handling)) / grip;
+    const yawPerSteer = STEER_YAW * handlingGain * grip;   // heading change per second per unit of wheel angle (the wheel angle already shrinks at speed)
+    const roadTurn = BEND_TURN * road.curve * mps;                     // how fast the road turns away under the car
     // A badly damaged car pulls to one side.
-    const pull = s.damage > 40 ? ((s.damage - 40) / 60) * 0.25 * speedRef : 0;
-
-    const lateralTarget = steerLateral - centrifugal + pull;
-    s.lateralVel += (lateralTarget - s.lateralVel) * Math.min(1, dt * 6 * grip * (0.6 + 0.6 * spec.handling));
+    const pull = s.damage > 40 ? ((s.damage - 40) / 60) * 0.006 * speedRef : 0;
+    const straighten = HEADING_SETTLE * Math.max(0, 1 - Math.abs(road.curve));
+    s.heading += (s.steerAngle * yawPerSteer - roadTurn + pull) * dt;
+    s.heading -= s.heading * Math.min(1, straighten * dt);
+    s.heading = clamp(s.heading, -MAX_HEADING, MAX_HEADING);
+    s.lateralVel = s.heading * mps;
     s.playerX += s.lateralVel * dt;
 
-    const slip = Math.abs(centrifugal) / (0.9 * grip * (0.5 + 0.5 * spec.handling));
+    // Past the grip limit the bend needs more steering than the tyres can give.
+    const slip = Math.abs(roadTurn) / Math.max(1e-6, yawPerSteer * (0.5 + 0.5 * spec.handling) * 1.15);
     s.skidding = (slip > 1 || (Math.abs(s.steerAngle) > 0.7 && speedRef > 0.7)) && s.speedKph > 40;
     if (s.skidding) s.speedKph = Math.max(0, s.speedKph - 6 * dt);
 
@@ -205,13 +225,15 @@ export class DrivingModel {
       if (firstHit) s.speedKph *= 0.35;
       s.speedKph = Math.max(0, s.speedKph - 60 * dt);
       s.playerX = side * (wall - 0.12);
-      s.lateralVel = -side * 1.0;
+      s.heading = -side * 0.02; // knocked back toward the road
+      s.lateralVel = s.heading * Math.max(1, s.speedKph / 3.6);
       s.steerAngle = 0;
     }
     this.barrierCooldown = Math.max(0, this.barrierCooldown - dt);
     if (Math.abs(s.playerX) > 3) {
       s.playerX = Math.sign(s.playerX) * 3;
       s.lateralVel = 0;
+      s.heading = 0;
       s.speedKph *= 0.97;
     }
 
