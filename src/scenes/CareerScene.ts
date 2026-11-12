@@ -5,7 +5,7 @@ import { JOBS, MEDAL_PAY_MULT, FIRST_CLEAR_BONUS } from '../career/Jobs';
 import { ENV_UNLOCK_REP, checkRequirements, isEnvUnlocked, jobStatus, payFor, rankFor, repFor } from '../career/Career';
 import { getEnvironment } from '../road/environments/Environments';
 import { getProfile } from '../economy/currentProfile';
-import { effectiveSpec } from '../economy/Profile';
+import { effectiveSpec, fuelLevel } from '../economy/Profile';
 import { getVehicle } from '../vehicles/VehicleRoster';
 import { startDrive } from './startDrive';
 import { kphToMph } from '../systems/units';
@@ -87,7 +87,7 @@ export class CareerScene extends Phaser.Scene {
     const p = getProfile();
     const job = JOBS[this.cursor];
     const spec = effectiveSpec(p, p.selectedVehicle);
-    const status = jobStatus(job, p.reputation, spec, p.vehicles[p.selectedVehicle]?.damage ?? 0);
+    const status = jobStatus(job, p.reputation, spec, p.vehicles[p.selectedVehicle]?.damage ?? 0, fuelLevel(p, p.selectedVehicle));
     if (status.state !== 'available') {
       this.notice = status.reason;
       this.redraw();
@@ -147,7 +147,7 @@ export class CareerScene extends Phaser.Scene {
       const job = JOBS[i];
       const y = 78 + r * ROW_H;
       const sel = i === this.cursor;
-      const st = jobStatus(job, p.reputation, spec, damage);
+      const st = jobStatus(job, p.reputation, spec, damage, fuelLevel(p, p.selectedVehicle));
       const rec = p.completedJobs[job.id];
       const row = this.rect(16, y, 316, ROW_H - 4, sel ? 0x2a2550 : 0x14122a, 0.95, sel ? 0xffd23f : 0x2a2850);
       row.setInteractive({ useHandCursor: true }).on('pointerdown', () => {
@@ -169,7 +169,7 @@ export class CareerScene extends Phaser.Scene {
 
     // Details.
     const job = JOBS[this.cursor];
-    const st = jobStatus(job, p.reputation, spec, damage);
+    const st = jobStatus(job, p.reputation, spec, damage, fuelLevel(p, p.selectedVehicle));
     const rec = p.completedJobs[job.id];
     const env = getEnvironment(job.challenge.env);
     const X = 346;

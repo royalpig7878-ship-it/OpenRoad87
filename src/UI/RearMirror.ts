@@ -195,7 +195,8 @@ export class RearMirror {
     const x0 = Math.max(left, r.x), x1 = Math.min(left + tw * k, r.x + r.w);
     const y0 = Math.max(top, r.y), y1 = Math.min(base, r.y + r.h);
     if (x1 <= x0 || y1 <= y0) return;
-    sp.setOrigin(0, 0).setScale(k).setPosition(x0, y0).setAlpha(1 - 0.7 * f).setVisible(true);
+    // Phaser draws a cropped image where the uncropped one would be, so position the whole image and crop it.
+    sp.setOrigin(0, 0).setScale(k).setPosition(left, top).setAlpha(1 - 0.7 * f).setVisible(true);
     sp.setCrop((x0 - left) / k, (y0 - top) / k, (x1 - x0) / k, (y1 - y0) / k);
     if (car.lights) {
       const red = Math.floor(this.time / 160) % 2 === 0;

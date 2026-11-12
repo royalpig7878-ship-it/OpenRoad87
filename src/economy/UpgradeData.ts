@@ -25,8 +25,12 @@ export const UPGRADES: Record<UpgradeKey, UpgradeDef> = {
   handling: { key: 'handling', name: 'HANDLING', effect: '+0.05 STEERING GRIP', icon: 'ui_speed', costFactor: 1.0 },
 };
 
-/** Fraction of the vehicle's price that upgrading from level n to n+1 costs (before the category factor). */
-export const LEVEL_COST_FRACTION = [0.06, 0.1, 0.16];
+/**
+ * Fraction of the vehicle's price that upgrading from level n to n+1 costs (before the category factor).
+ * Maxing every category costs about the car's own price (it was over twice the price, so fully upgrading the
+ * starter cost more than buying the next car).
+ */
+export const LEVEL_COST_FRACTION = [0.03, 0.05, 0.08];
 
 /** Upgrade levels per category for one vehicle. */
 export type UpgradeLevels = Record<UpgradeKey, number>;
@@ -39,8 +43,12 @@ export function upgradeCost(price: number, key: UpgradeKey, level: number): numb
   return Math.round((price * LEVEL_COST_FRACTION[level] * UPGRADES[key].costFactor) / 10) * 10;
 }
 
-/** Repair cost per percent of damage, as a fraction of the vehicle's price. */
-export const REPAIR_COST_PER_PERCENT = 0.0035;
+/**
+ * Repair cost per percent of damage, as a fraction of the vehicle's price. A typical scrappy run (about 20%)
+ * costs roughly one rookie job on the starter car and under half a top job on the most expensive car. (It was
+ * 0.0035, which made a crash-prone beginner lose money doing jobs: 20% on the starter cost almost 3 job runs.)
+ */
+export const REPAIR_COST_PER_PERCENT = 0.0012;
 
 export function repairCost(price: number, damagePercent: number): number {
   return Math.round((price * REPAIR_COST_PER_PERCENT * Math.max(0, damagePercent)) / 10) * 10;

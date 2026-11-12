@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { DrivingState, REFERENCE_SPEED_KPH } from '../systems/DrivingModel';
+import { BRAKE_FADE, DrivingState, REFERENCE_SPEED_KPH } from '../systems/DrivingModel';
 import { VehicleSpec } from '../vehicles/VehicleSpec';
 import { RoadPalette } from '../road/RoadTypes';
 import { SWEEP, fuelAngle, rpmAngle, smooth, speedoAngle, tempAngle, warningStates, wheelDegrees } from './gaugeMath';
@@ -242,8 +242,9 @@ export class CockpitView {
     const spec = this.spec;
     const rpmNorm = Phaser.Math.Clamp((s.rpm - spec.idleRpm) / (spec.redlineRpm - spec.idleRpm), 0, 1);
 
-    // Engine temperature: rises with load and damage, cools slowly.
-    this.temp = smooth(this.temp, 0.38 + 0.22 * s.throttle * rpmNorm + 0.4 * (s.damage / 100), 0.15, dt);
+    // Engine temperature comes from the driving model (redlining heats it; see DrivingModel.updateHeat).
+    // A blown engine pegs the needle.
+    this.temp = s.engineBlown ? 1 : s.engineTemp;
     // Turbo boost spools with throttle and revs (slow rise, quick drop).
     const boostTarget = s.throttle * Phaser.Math.Clamp((rpmNorm - 0.25) / 0.6, 0, 1);
     this.boost = smooth(this.boost, boostTarget, boostTarget > this.boost ? 1.6 : 4, dt);
@@ -289,6 +290,10 @@ export class CockpitView {
       damage: s.damage,
       fuelFrac: s.fuel / spec.fuelCapacity,
       braking: s.brake > 0.5 && s.speedKph > 5,
+      engineTemp: s.engineTemp,
+      overheated: s.overheated,
+      engineBlown: s.engineBlown,
+      brakeFade: s.brakeTemp >= BRAKE_FADE,
       signal,
       headlights: f.headlights,
       time: this.time,

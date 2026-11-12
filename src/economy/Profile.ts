@@ -13,6 +13,11 @@ export interface OwnedVehicle {
   upgrades: UpgradeLevels;
   /** 0 (perfect) .. 100 (wrecked). */
   damage: number;
+  /**
+   * Fuel left in the tank as a share of its size, 0..1 (missing = full). Carries over between drives like
+   * damage, so you gas up in the garage. A share (not litres) so a bigger tank upgrade keeps the same level.
+   */
+  fuel?: number;
 }
 
 /** Everything the garage and economy need to know about the player (the save system stores this). */
@@ -55,7 +60,7 @@ export function createProfile(): PlayerProfile {
     money: STARTING_MONEY,
     reputation: 0,
     selectedVehicle: STARTING_VEHICLE,
-    vehicles: { [STARTING_VEHICLE]: { upgrades: noUpgrades(), damage: 0 } },
+    vehicles: { [STARTING_VEHICLE]: { upgrades: noUpgrades(), damage: 0, fuel: 1 } },
     highScores: {},
     completedJobs: {},
   };
@@ -76,7 +81,7 @@ export function buyVehicle(p: PlayerProfile, id: string): Result {
   if (owns(p, id)) return fail('ALREADY OWNED');
   if (p.money < spec.price) return fail('NOT ENOUGH MONEY');
   p.money -= spec.price;
-  p.vehicles[id] = { upgrades: noUpgrades(), damage: 0 };
+  p.vehicles[id] = { upgrades: noUpgrades(), damage: 0, fuel: 1 };
   return OK;
 }
 
@@ -94,6 +99,53 @@ export function buyUpgrade(p: PlayerProfile, id: string, key: UpgradeKey): Resul
   if (p.money < cost) return fail('NOT ENOUGH MONEY');
   p.money -= cost;
   owned.upgrades[key]++;
+  return OK;
+}
+
+/** Price of fuel per litre at the garage pump. */
+export const FUEL_PRICE_PER_LITRE = 2;
+/** With no money and a nearly empty tank, the garage gives you this much for free so you are never stuck. */
+export const EMERGENCY_FUEL = 0.15;
+
+/** Share of the tank that is full (0..1). */
+export const fuelLevel = (p: PlayerProfile, id: string): number => p.vehicles[id]?.fuel ?? 1;
+
+export function setFuel(p: PlayerProfile, id: string, frac: number): void {
+  const owned = p.vehicles[id];
+  if (owned) owned.fuel = Math.min(1, Math.max(0, frac));
+}
+
+/** Cost to fill the tank to the top. */
+export function gasUpCost(p: PlayerProfile, id: string): number {
+  if (!owns(p, id)) return 0;
+  const litres = (1 - fuelLevel(p, id)) * effectiveSpec(p, id).fuelCapacity;
+  return Math.ceil(litres * FUEL_PRICE_PER_LITRE);
+}
+
+/**
+ * Fills the tank. With too little money it buys what the money covers. Broke with an almost empty tank, the
+ * pump gives an emergency splash (EMERGENCY_FUEL) for free so the player can always drive and earn again.
+ */
+export function gasUp(p: PlayerProfile, id: string): Result & { free?: boolean } {
+  const owned = p.vehicles[id];
+  if (!owned) return fail('YOU DO NOT OWN THIS CAR');
+  const level = fuelLevel(p, id);
+  if (level >= 0.999) return fail('TANK ALREADY FULL');
+  const cap = effectiveSpec(p, id).fuelCapacity;
+  const full = gasUpCost(p, id);
+  if (p.money >= full) {
+    p.money -= full;
+    owned.fuel = 1;
+    return OK;
+  }
+  const affordable = p.money / FUEL_PRICE_PER_LITRE / cap;
+  if (level + affordable < EMERGENCY_FUEL) {
+    owned.fuel = EMERGENCY_FUEL;
+    p.money = 0;
+    return { ok: true, free: true };
+  }
+  owned.fuel = Math.min(1, level + affordable);
+  p.money = 0;
   return OK;
 }
 
@@ -199,10 +251,10 @@ export function deserializeProfile(text: string | null | undefined): PlayerProfi
       const up = noUpgrades();
       const saved = (typeof ov.upgrades === 'object' && ov.upgrades !== null ? ov.upgrades : {}) as Record<string, unknown>;
       for (const k of UPGRADE_KEYS) up[k] = Math.floor(num(saved[k], 0, 0, MAX_UPGRADE_LEVEL));
-      vehicles[id] = { upgrades: up, damage: num(ov.damage, 0, 0, 100) };
+      vehicles[id] = { upgrades: up, damage: num(ov.damage, 0, 0, 100), fuel: num(ov.fuel, 1, 0, 1) };
     }
   }
-  if (Object.keys(vehicles).length === 0) vehicles[STARTING_VEHICLE] = { upgrades: noUpgrades(), damage: 0 };
+  if (Object.keys(vehicles).length === 0) vehicles[STARTING_VEHICLE] = { upgrades: noUpgrades(), damage: 0, fuel: 1 };
   const highScores: Record<string, ScoreEntry[]> = {};
   if (typeof r.highScores === 'object' && r.highScores !== null && !Array.isArray(r.highScores)) {
     for (const [id, list] of Object.entries(r.highScores as Record<string, unknown>)) {

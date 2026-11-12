@@ -15,9 +15,11 @@ export interface ArcadeFrame {
   /** Pursuits escaped so far. */
   escapes: number;
   busted: boolean;
+  /** The engine blew up (redlined until it gave out). */
+  engineBlown?: boolean;
 }
 
-export type Outcome = 'complete' | 'time_up' | 'wrecked' | 'out_of_fuel' | 'busted' | 'speed_lost' | 'escaped';
+export type Outcome = 'complete' | 'time_up' | 'wrecked' | 'out_of_fuel' | 'engine_blown' | 'busted' | 'speed_lost' | 'escaped';
 
 export interface ScoreLine {
   label: string;
@@ -179,6 +181,10 @@ export class ArcadeSession {
     // Ways a run ends.
     if (f.damage >= 100) {
       this.finish('wrecked', false, ev);
+      return ev;
+    }
+    if (f.engineBlown && f.speedKph < 5) {
+      this.finish('engine_blown', false, ev);
       return ev;
     }
     if (f.fuel <= 0 && f.speedKph < 5) {

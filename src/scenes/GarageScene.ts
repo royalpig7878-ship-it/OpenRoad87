@@ -5,7 +5,7 @@ import { SceneKeys, TextureKeys, Colors, FONT } from '../core/config';
 import { VEHICLES, getVehicle } from '../vehicles/VehicleRoster';
 import { VehicleSpec } from '../vehicles/VehicleSpec';
 import { getProfile } from '../economy/currentProfile';
-import { addMoney, buyUpgrade, buyVehicle, effectiveSpec, fullRepairCost, nextUpgradeCost, owns, repair, selectVehicle } from '../economy/Profile';
+import { addMoney, buyUpgrade, buyVehicle, effectiveSpec, fuelLevel, fullRepairCost, gasUp, gasUpCost, nextUpgradeCost, owns, repair, selectVehicle } from '../economy/Profile';
 import { MAX_UPGRADE_LEVEL, UPGRADES, UPGRADE_KEYS, UpgradeKey } from '../economy/UpgradeData';
 import { STAT_MAX, applyUpgrades } from '../economy/VehicleTuning';
 import { kphToMph } from '../systems/units';
@@ -14,6 +14,8 @@ import { startDrive } from './startDrive';
 type Mode = 'showroom' | 'workshop';
 
 const PANEL = { x: 600, y: 56, w: 344, h: 440 };
+/** Workshop row spacing (7 upgrades, repair, gas). */
+const ROW = 36;
 const SHIFT_X = -180; // scenes are shifted left so the car sits on the left 60% and the panel covers the rest
 
 const STATS: { label: string; get: (s: VehicleSpec) => number; max: number; fmt: (v: number) => string }[] = [
@@ -34,7 +36,7 @@ const money = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
  */
 export class GarageScene extends Phaser.Scene {
   private mode: Mode = 'showroom';
-  private cursor = 0; // showroom: vehicle index; workshop: 0..6 upgrades, 7 repair
+  private cursor = 0; // showroom: vehicle index; workshop: 0..6 upgrades, 7 repair, 8 gas
   private view!: Phaser.GameObjects.Container;
   private bgShowroom!: Phaser.GameObjects.Image;
   private bgWorkshop!: Phaser.GameObjects.Image;
@@ -111,7 +113,7 @@ export class GarageScene extends Phaser.Scene {
   }
 
   private moveCursor(d: number): void {
-    const n = this.mode === 'showroom' ? VEHICLES.length : UPGRADE_KEYS.length + 1;
+    const n = this.mode === 'showroom' ? VEHICLES.length : UPGRADE_KEYS.length + 2;
     this.cursor = (this.cursor + d + n) % n;
     audio.sfx('uiMove');
     this.redraw();
@@ -154,6 +156,11 @@ export class GarageScene extends Phaser.Scene {
         const r = buyUpgrade(p, id, key);
         audio.sfx(r.ok ? 'cash' : 'uiError');
         this.flashMessage(r.ok ? `${UPGRADES[key].name} UPGRADED` : r.reason);
+      } else if (this.cursor === UPGRADE_KEYS.length + 1) {
+        const before = p.money;
+        const r = gasUp(p, id);
+        audio.sfx(r.ok ? 'cash' : 'uiError');
+        this.flashMessage(!r.ok ? r.reason : r.free ? 'EMERGENCY FUEL - ON THE HOUSE' : fuelLevel(p, id) >= 0.999 ? `TANK FULL (-${money(before - p.money)})` : `PART FILL (-${money(before - p.money)})`);
       } else {
         const before = p.money;
         const r = repair(p, id);
@@ -321,9 +328,9 @@ export class GarageScene extends Phaser.Scene {
     }
     const lv = p.vehicles[spec.id].upgrades;
     UPGRADE_KEYS.forEach((key: UpgradeKey, i) => {
-      const y = PANEL.y + 34 + i * 38;
+      const y = PANEL.y + 34 + i * ROW;
       const sel = i === this.cursor;
-      const row = this.rect(PANEL.x + 10, y, PANEL.w - 20, 34, sel ? 0x2a2550 : 0x14122a, 1, sel ? 0xffd23f : 0x2a2850);
+      const row = this.rect(PANEL.x + 10, y, PANEL.w - 20, ROW - 4, sel ? 0x2a2550 : 0x14122a, 1, sel ? 0xffd23f : 0x2a2850);
       row.setInteractive({ useHandCursor: true }).on('pointerdown', () => {
         if (this.cursor === i) this.act();
         else {
@@ -340,10 +347,10 @@ export class GarageScene extends Phaser.Scene {
     });
     // Repair row.
     const i = UPGRADE_KEYS.length;
-    const y = PANEL.y + 34 + i * 38;
+    const y = PANEL.y + 34 + i * ROW;
     const sel = this.cursor === i;
     const dmg = p.vehicles[spec.id].damage;
-    const row = this.rect(PANEL.x + 10, y, PANEL.w - 20, 34, sel ? 0x2a2550 : 0x14122a, 1, sel ? 0xffd23f : 0x2a2850);
+    const row = this.rect(PANEL.x + 10, y, PANEL.w - 20, ROW - 4, sel ? 0x2a2550 : 0x14122a, 1, sel ? 0xffd23f : 0x2a2850);
     row.setInteractive({ useHandCursor: true }).on('pointerdown', () => {
       if (this.cursor === i) this.act();
       else {
@@ -351,15 +358,36 @@ export class GarageScene extends Phaser.Scene {
         this.redraw();
       }
     });
-    this.view.add(this.add.image(PANEL.x + 30, y + 18, 'ui_repair').setScale(0.75));
-    this.text(PANEL.x + 54, y + 3, 'REPAIR', 14, Colors.white);
-    this.rect(PANEL.x + 54, y + 22, 120, 8, 0x000000, 0.8);
-    this.rect(PANEL.x + 54, y + 22, 120 * (dmg / 100), 8, dmg > 50 ? 0xe8344a : 0xffb020);
-    this.text(PANEL.x + 180, y + 18, `${Math.round(dmg)}%`, 11, Colors.white);
+    this.view.add(this.add.image(PANEL.x + 30, y + 16, 'ui_repair').setScale(0.75));
+    this.text(PANEL.x + 54, y + 2, 'REPAIR', 14, Colors.white);
+    this.rect(PANEL.x + 54, y + 20, 120, 8, 0x000000, 0.8);
+    this.rect(PANEL.x + 54, y + 20, 120 * (dmg / 100), 8, dmg > 50 ? 0xe8344a : 0xffb020);
+    this.text(PANEL.x + 180, y + 16, `${Math.round(dmg)}%`, 11, Colors.white);
     const cost = fullRepairCost(p, spec.id);
     this.text(PANEL.x + 270, y + 10, dmg > 0 ? money(cost) : 'OK', 13, dmg > 0 ? (p.money >= cost ? Colors.yellow : '#ff9a4a') : '#60ff90');
 
-    const label = this.cursor < UPGRADE_KEYS.length ? 'UPGRADE' : dmg > 0 ? 'REPAIR' : 'NO DAMAGE';
-    this.button(PANEL.x + PANEL.w / 2, PANEL.y + 34 + 8 * 38 + 24, label, () => this.act(), true, 0.95, true);
+    // Gas row: the tank carries over between drives, so fill up here.
+    const gi = UPGRADE_KEYS.length + 1;
+    const gy = PANEL.y + 34 + gi * ROW;
+    const gsel = this.cursor === gi;
+    const fuel = fuelLevel(p, spec.id);
+    const grow = this.rect(PANEL.x + 10, gy, PANEL.w - 20, ROW - 4, gsel ? 0x2a2550 : 0x14122a, 1, gsel ? 0xffd23f : 0x2a2850);
+    grow.setInteractive({ useHandCursor: true }).on('pointerdown', () => {
+      if (this.cursor === gi) this.act();
+      else {
+        this.cursor = gi;
+        this.redraw();
+      }
+    });
+    this.view.add(this.add.image(PANEL.x + 30, gy + 16, 'ui_fuel').setScale(0.75));
+    this.text(PANEL.x + 54, gy + 2, 'GAS UP', 14, Colors.white);
+    this.rect(PANEL.x + 54, gy + 20, 120, 8, 0x000000, 0.8);
+    this.rect(PANEL.x + 54, gy + 20, 120 * fuel, 8, fuel < 0.2 ? 0xe8344a : 0x4de1ff);
+    this.text(PANEL.x + 180, gy + 16, `${Math.round(fuel * 100)}%`, 11, Colors.white);
+    const gasCost = gasUpCost(p, spec.id);
+    this.text(PANEL.x + 270, gy + 9, fuel < 0.999 ? money(gasCost) : 'FULL', 13, fuel < 0.999 ? (p.money >= gasCost ? Colors.yellow : '#ff9a4a') : '#60ff90');
+
+    const label = this.cursor < UPGRADE_KEYS.length ? 'UPGRADE' : this.cursor === gi ? (fuel < 0.999 ? 'GAS UP' : 'TANK FULL') : dmg > 0 ? 'REPAIR' : 'NO DAMAGE';
+    this.button(PANEL.x + PANEL.w / 2, PANEL.y + 34 + 9 * ROW + 18, label, () => this.act(), true, 0.95, true);
   }
 }

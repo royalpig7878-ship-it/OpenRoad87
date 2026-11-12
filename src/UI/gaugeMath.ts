@@ -52,6 +52,12 @@ export interface WarningInputs {
   /** Turn direction currently signalled: -1 left, 1 right, 0 none. */
   signal: -1 | 0 | 1;
   headlights: boolean;
+  /** Engine temperature 0..1 (see DrivingModel). */
+  engineTemp?: number;
+  overheated?: boolean;
+  engineBlown?: boolean;
+  /** Brakes hot enough to fade. */
+  brakeFade?: boolean;
   /** Seconds, used to blink lamps. */
   time: number;
 }
@@ -61,10 +67,11 @@ export const WARNING_NAMES = ['oil', 'battery', 'engine', 'brake', 'fuel', 'turn
 export function warningStates(w: WarningInputs): boolean[] {
   const blink = Math.floor(w.time * 2.5) % 2 === 0;
   return [
-    w.damage > 60, // oil pressure
-    w.damage > 85, // charging system
-    w.damage > 35, // check engine
-    w.braking, // brake lamp
+    w.damage > 60 || !!w.overheated || !!w.engineBlown, // oil pressure (lit when overheated or blown)
+    w.damage > 85 || !!w.engineBlown, // charging system
+    // Check engine: blinks while the engine is hot, solid when overheated/blown or damaged.
+    w.damage > 35 || !!w.overheated || !!w.engineBlown || ((w.engineTemp ?? 0) >= 0.78 && blink),
+    w.braking || (!!w.brakeFade && blink), // brake lamp (blinks when the brakes fade)
     w.fuelFrac < 0.08 ? blink : w.fuelFrac < 0.2, // low fuel (blinks when nearly empty)
     false, // the strip's single arrow is left dark: directional arrows flank the gear display instead
     w.headlights, // high-beam/lights lamp

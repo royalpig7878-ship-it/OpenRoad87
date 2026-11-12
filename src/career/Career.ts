@@ -59,16 +59,19 @@ export function checkRequirements(spec: VehicleSpec, req: JobRequirements): Requ
 
 /** Cars above this damage cannot start a job (repair first). */
 export const MAX_START_DAMAGE = 75;
+/** Jobs need at least this share of a tank (gas up first). */
+export const MIN_START_FUEL = 0.1;
 
 export type JobStatus = { state: 'available' } | { state: 'locked'; reason: string } | { state: 'blocked'; reason: string };
 
 /** Can the player start this job right now with this car? Gives the reason if not. */
-export function jobStatus(job: JobDef, rep: number, spec: VehicleSpec, damage: number): JobStatus {
+export function jobStatus(job: JobDef, rep: number, spec: VehicleSpec, damage: number, fuel = 1): JobStatus {
   if (rep < job.minRep) return { state: 'locked', reason: `NEED REPUTATION ${job.minRep}` };
   if (!isEnvUnlocked(rep, job.challenge.env)) return { state: 'locked', reason: `ROAD LOCKED (REP ${ENV_UNLOCK_REP[job.challenge.env]})` };
   const failed = checkRequirements(spec, job.requirements).find((c) => !c.ok);
   if (failed) return { state: 'blocked', reason: `CAR NEEDS ${failed.label} ${failed.need}` };
   if (damage >= MAX_START_DAMAGE) return { state: 'blocked', reason: 'CAR TOO DAMAGED - REPAIR FIRST' };
+  if (fuel < MIN_START_FUEL) return { state: 'blocked', reason: 'TANK NEARLY EMPTY - GAS UP FIRST' };
   return { state: 'available' };
 }
 

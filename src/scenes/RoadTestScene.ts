@@ -10,7 +10,7 @@ import { TouchControls, isTouchDevice } from '../controls/TouchControls';
 import { getSettings, updateSettings } from '../save/Settings';
 import { QualityManager } from '../systems/QualityManager';
 import { ArcadeSession } from '../arcade/ArcadeSession';
-import { ChallengeDef, getChallenge } from '../arcade/Challenges';
+import { ARCADE_MEDAL_PAY, ChallengeDef, getChallenge } from '../arcade/Challenges';
 import { ArcadeHud } from '../UI/ArcadeHud';
 import { GATE_ART, GateKind, clearGates, createGateTextures, placeGate } from '../arcade/Gates';
 import { recordScore } from '../economy/Profile';
@@ -22,10 +22,12 @@ import { ENVIRONMENTS, sceneryTexturesOf } from '../road/environments/Environmen
 import { Environment, SceneryArt, TimeOfDay } from '../road/environments/EnvironmentTypes';
 import { World, applyPalettes, blendAt, buildWorld } from '../road/environments/WorldBuilder';
 import { InputManager } from '../controls/InputManager';
-import { DrivingModel, REFERENCE_SPEED_KPH } from '../systems/DrivingModel';
+import { DrivingModel, DrivingState, ENGINE_HOT, REFERENCE_SPEED_KPH } from '../systems/DrivingModel';
 import { VEHICLES, getVehicle } from '../vehicles/VehicleRoster';
 import { getProfile } from '../economy/currentProfile';
-import { effectiveSpec, owns, setDamage } from '../economy/Profile';
+import { addMoney, effectiveSpec, fuelLevel, owns, setDamage, setFuel } from '../economy/Profile';
+import { PICKUP_VALUE, PickupKind, PickupManager } from '../pickups/PickupManager';
+import { PickupRenderer } from '../pickups/PickupRenderer';
 import { CockpitView } from '../UI/CockpitView';
 import { TrafficManager } from '../traffic/TrafficManager';
 import { TrafficRenderer, TrafficArtInfo } from '../traffic/TrafficRenderer';
@@ -86,6 +88,8 @@ export class RoadTestScene extends Phaser.Scene {
   private rearDist = 600;
   private traffic!: TrafficManager;
   private trafficView!: TrafficRenderer;
+  private pickups!: PickupManager;
+  private pickupView?: PickupRenderer;
   private trafficOn = true;
   private police!: PoliceManager;
   private policeView!: TrafficRenderer;
@@ -115,6 +119,12 @@ export class RoadTestScene extends Phaser.Scene {
   private diffIndex = 1;
   private popup!: Phaser.GameObjects.Text;
   private popupTime = 0;
+  /** Steam/smoke puffs from under the hood (overheating, blown engine). */
+  private steamGfx!: Phaser.GameObjects.Graphics;
+  private puffs: { x: number; y: number; r: number; vx: number; vy: number; life: number; max: number; dark: boolean }[] = [];
+  private puffClock = 0;
+  /** Seconds stopped with a blown engine (free drive tows the car after a moment). */
+  private blownStill = 0;
   private zoneBanner!: Phaser.GameObjects.Text;
   private zoneBannerTime = 0;
 
@@ -130,9 +140,19 @@ export class RoadTestScene extends Phaser.Scene {
   }
 
   /** The car as the player has it: upgrades applied, and the damage it has carried over from earlier drives. */
-  private playerCar(id: string): { spec: ReturnType<typeof effectiveSpec>; damage: number } {
+  /** The car as saved: upgrades, damage and the fuel left from the last drive (cars you do not own: full tank). */
+  private playerCar(id: string): { spec: ReturnType<typeof effectiveSpec>; damage: number; fuel: number } {
     const p = getProfile();
-    return { spec: effectiveSpec(p, id), damage: owns(p, id) ? p.vehicles[id].damage : 0 };
+    const spec = effectiveSpec(p, id);
+    return { spec, damage: owns(p, id) ? p.vehicles[id].damage : 0, fuel: (owns(p, id) ? fuelLevel(p, id) : 1) * spec.fuelCapacity };
+  }
+
+  /** Writes the car's damage and fuel back to the save. */
+  private saveCarState(): void {
+    const p = getProfile();
+    const s = this.model.state;
+    setDamage(p, this.vehicleId, s.damage);
+    setFuel(p, this.vehicleId, s.fuel / this.model.vehicle.fuelCapacity);
   }
 
   create(): void {
@@ -160,10 +180,17 @@ export class RoadTestScene extends Phaser.Scene {
 
     this.backdrop = new BackdropBlender(this, this.cfg.horizonY);
     this.gfx = this.add.graphics().setDepth(1);
+    // Under the cockpit (depth 20) so puffs only show through the windshield, as if rising off the hood.
+    this.steamGfx = this.add.graphics().setDepth(17.6);
+    this.puffs = [];
+    this.blownStill = 0;
     this.weather = new WeatherRenderer(this, this.cfg.horizonY);
     this.pursuitHud = new PursuitHud(this);
     const car = this.playerCar(this.vehicleId);
-    this.model = new DrivingModel(car.spec, roadEdges(this.cfg.lanes), 1, undefined, car.damage);
+    this.model = new DrivingModel(car.spec, roadEdges(this.cfg.lanes), 1, car.fuel, car.damage);
+    // The tank carries over from the last drive: warn when it is low.
+    const startFuel = car.fuel / car.spec.fuelCapacity;
+    if (startFuel < 0.2) this.time.delayedCall(1800, () => this.showPopup(startFuel < 0.01 ? 'TANK EMPTY - GAS UP IN THE GARAGE' : 'LOW FUEL - GAS UP IN THE GARAGE', '#ff9a4a'));
     audio.attach();
     this.engineInit = this.makeEngineInit(car.spec, this.vehicleId);
     this.driveAudio = new DriveAudio(this.engineInit);
@@ -243,7 +270,7 @@ export class RoadTestScene extends Phaser.Scene {
         // Developer shortcut: try any car (owned cars keep their upgrades and damage).
         this.vehicleId = VEHICLES[i].id;
         const c = this.playerCar(VEHICLES[i].id);
-        this.model.setVehicle(c.spec, c.damage);
+        this.model.setVehicle(c.spec, c.damage, c.fuel);
         this.engineInit = this.makeEngineInit(c.spec, VEHICLES[i].id);
         this.driveAudio.setEngine(this.engineInit);
         void this.cockpit.setVehicle(VEHICLES[i]);
@@ -319,7 +346,7 @@ export class RoadTestScene extends Phaser.Scene {
   private stepArcade(dt: number, s: { speedKph: number; damage: number; fuel: number; position: number; playerX: number }): void {
     const a = this.arcade!;
     const ev = a.update(dt, {
-      speedKph: s.speedKph, damage: s.damage, fuel: s.fuel,
+      speedKph: s.speedKph, damage: s.damage, fuel: s.fuel, engineBlown: this.model.state.engineBlown,
       nearMisses: this.traffic.stats.nearMisses, trafficHits: this.traffic.stats.hits,
       escapes: this.escapeCount, busted: this.police.state === 'busted',
     });
@@ -355,7 +382,7 @@ export class RoadTestScene extends Phaser.Scene {
     const a = this.arcade!;
     const r = a.result!;
     const profile = getProfile();
-    setDamage(profile, this.vehicleId, this.model.state.damage);
+    this.saveCarState();
     saveManager.requestSave();
     if (this.job) {
       // Career: pay out (or fine) and record progress; jobs have no arcade high-score table.
@@ -364,7 +391,12 @@ export class RoadTestScene extends Phaser.Scene {
       return;
     }
     const rank = recordScore(profile, a.def.id, r.score, this.vehicleId);
-    this.scene.start(SceneKeys.Results, { result: r, envId: this.startEnvId ?? a.def.env, rank: rank.rank, newBest: rank.newBest });
+    const arcadePay = r.success ? ARCADE_MEDAL_PAY[r.medal] : 0;
+    if (arcadePay > 0) {
+      addMoney(profile, arcadePay);
+      saveManager.requestSave();
+    }
+    this.scene.start(SceneKeys.Results, { result: r, envId: this.startEnvId ?? a.def.env, rank: rank.rank, newBest: rank.newBest, arcadePay });
   }
 
   /** Time of day used for an environment: the player's override, or the environment's own default. */
@@ -380,6 +412,7 @@ export class RoadTestScene extends Phaser.Scene {
     const choice = WORLDS[index];
     this.trafficView?.destroy();
     this.policeView?.destroy();
+    this.pickupView?.destroy();
     this.scenery?.destroy();
 
     this.world = buildWorld(this.cfg, choice.envs, this.sceneryArt);
@@ -408,6 +441,8 @@ export class RoadTestScene extends Phaser.Scene {
     this.traffic.extras = this.police.units;
     this.policeView = new TrafficRenderer(this, this.road, this.cfg, this.cache.json.get('traffic_meta') as Record<string, TrafficArtInfo>, this.police.units.length);
     this.scenery = new SceneryRenderer(this, this.road, this.cfg, this.sceneryArt);
+    this.pickups = new PickupManager(this.cfg.lanes, this.world.trackLength, this.model.state.position);
+    this.pickupView = new PickupRenderer(this, this.road, this.cfg);
     this.worldSceneryKeys = sceneryTexturesOf(choice.envs);
     this.lastZone = -1;
     this.showPopup(choice.label.toUpperCase(), Colors.cyan);
@@ -429,9 +464,100 @@ export class RoadTestScene extends Phaser.Scene {
 
   /** Leaves the drive: the car's damage is kept, so crashes cost money at the garage. */
   private leave(): void {
-    setDamage(getProfile(), this.vehicleId, this.model.state.damage);
+    this.saveCarState();
     saveManager.requestSave();
     this.scene.start(this.job ? SceneKeys.Career : this.arcade ? SceneKeys.ArcadeMenu : this.fromGarage ? SceneKeys.Garage : SceneKeys.MainMenu);
+  }
+
+  /**
+   * Breakdowns: warnings and sounds for engine heat, over-revs and brake fade, steam (or smoke) off the hood,
+   * and in free drive a tow once a blown engine has rolled to a stop.
+   */
+  private reactToEngine(dt: number, s: DrivingState): void {
+    const ev = s.events;
+    if (ev.includes('engine_hot')) { this.showPopup('ENGINE HOT - SHIFT UP!', '#ff9a4a'); this.driveAudio.sfx('uiError'); }
+    if (ev.includes('overheat')) { this.showPopup('OVERHEATING! EASE OFF', '#ff5a4a'); this.driveAudio.sfx('steam'); }
+    if (ev.includes('engine_cooled')) this.showPopup('ENGINE COOLED', '#60ff90');
+    if (ev.includes('over_rev')) { this.showPopup('OVER-REV!', '#ff9a4a'); this.driveAudio.sfx('uiError'); this.shake = 3; }
+    if (ev.includes('brakes_fading')) this.showPopup('BRAKES FADING', '#ff9a4a');
+    if (ev.includes('engine_blown')) {
+      this.showPopup('ENGINE BLOWN!', '#ff5a4a');
+      this.driveAudio.sfx('blowup');
+      this.flash = 0.35;
+      this.shake = 9;
+    }
+
+    // Puffs: wisps when hot, steady steam when overheated, thick dark smoke once blown.
+    const rate = s.engineBlown ? 14 : s.overheated ? 9 : s.engineTemp >= ENGINE_HOT ? 2 : 0;
+    this.puffClock += dt * rate;
+    while (this.puffClock >= 1) {
+      this.puffClock -= 1;
+      const max = 1.2 + Math.random() * 0.8;
+      this.puffs.push({
+        x: 480 + (Math.random() - 0.5) * 240, y: 335 + Math.random() * 20, r: 12 + Math.random() * 14,
+        vx: (Math.random() - 0.5) * 30 - s.steerAngle * 40, vy: -(70 + Math.random() * 60 + s.speedKph * 0.4),
+        life: max, max, dark: s.engineBlown,
+      });
+    }
+    const g = this.steamGfx;
+    g.clear();
+    this.puffs = this.puffs.filter((p) => (p.life -= dt) > 0);
+    for (const p of this.puffs) {
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      p.r += 26 * dt;
+      const age = p.max - p.life;
+      const a = Math.min(1, age / 0.15) * Math.sqrt(p.life / p.max) * (p.dark ? 0.75 : 0.6);
+      g.fillStyle(p.dark ? 0x2a2a2a : 0xe8eef0, a).fillCircle(p.x, p.y, p.r);
+    }
+
+    // Free drive has no run to end: once the dead car has stopped, it is towed and the engine fixed.
+    // (The blow-up damage stays on the car; repair it in the garage.)
+    if (s.engineBlown && !this.arcade) {
+      this.blownStill = s.speedKph < 3 ? this.blownStill + dt : 0;
+      if (this.blownStill > 1.5) {
+        this.model.resetEngine();
+        // Dropped back on the road, pointing straight.
+        this.model.state.playerX = 0;
+        this.model.state.heading = 0;
+        this.model.state.lateralVel = 0;
+        this.blownStill = 0;
+        this.showPopup('TOWED - ENGINE REBUILT', Colors.cyan);
+      }
+    }
+  }
+
+  /** Applies a pickup: repair kit, gas can, cash or nitro. */
+  private collect(kind: PickupKind): void {
+    const m = this.model;
+    switch (kind) {
+      case 'repair':
+        m.repairBy(PICKUP_VALUE.repair);
+        this.showPopup(`REPAIR  -${PICKUP_VALUE.repair}% DAMAGE`, '#60ff90');
+        this.driveAudio.sfx('checkpoint');
+        break;
+      case 'fuel': {
+        const litres = m.vehicle.fuelCapacity * PICKUP_VALUE.fuelFrac;
+        m.addFuel(litres);
+        this.showPopup(`GAS  +${Math.round(litres)} L`, '#ff9a4a');
+        this.driveAudio.sfx('checkpoint');
+        break;
+      }
+      case 'money': {
+        const cash = Math.round((PICKUP_VALUE.moneyMin + Math.random() * (PICKUP_VALUE.moneyMax - PICKUP_VALUE.moneyMin)) / 10) * 10;
+        addMoney(getProfile(), cash);
+        saveManager.requestSave();
+        this.showPopup(`+$${cash}`, Colors.yellow);
+        this.driveAudio.sfx('cash');
+        break;
+      }
+      case 'boost':
+        m.startBoost();
+        this.showPopup('NITRO BOOST!', Colors.cyan);
+        this.driveAudio.sfx('turboBlow');
+        this.shake = Math.max(this.shake, 3);
+        break;
+    }
   }
 
   private showPopup(text: string, color: string): void {
@@ -502,9 +628,15 @@ export class RoadTestScene extends Phaser.Scene {
     if (s.events.includes('shift')) this.driveAudio.shift();
     if (s.events.includes('barrier_hit')) this.driveAudio.sfx('scrape', { level: Math.min(1, 0.4 + s.speedKph / 200) });
     if (s.events.includes('out_of_fuel')) this.driveAudio.sfx('sputter');
+    this.reactToEngine(dt, s);
     this.flash = Math.max(0, this.flash - dt);
     if (s.events.includes('barrier_hit')) this.shake = 6;
     this.shake = Math.max(0, this.shake - dt * 14);
+
+    // Pickups lying on the road.
+    for (const p of this.pickups.update(dt, { position: s.position, playerX: s.playerX }, { fuelFrac: s.fuel / this.model.vehicle.fuelCapacity, damage: s.damage })) {
+      this.collect(p.kind);
+    }
 
     // Traffic: simulate, resolve collisions and near misses.
     const player = { position: s.position, playerX: s.playerX, speedKph: s.speedKph };
@@ -543,6 +675,14 @@ export class RoadTestScene extends Phaser.Scene {
     if (pev.busted) {
       this.showPopup('BUSTED!', '#ff5a4a');
       this.driveAudio.sfx('busted');
+    }
+    // Free drive: the pursuit card's reward or fine is real money (jobs settle police results themselves).
+    if (pev.result && !this.arcade) {
+      const profile = getProfile();
+      const r = pev.result;
+      addMoney(profile, r.cash - Math.min(profile.money, r.fine));
+      profile.reputation = Math.max(0, profile.reputation + r.reputation);
+      saveManager.requestSave();
     }
     if (pev.escaped) {
       this.escapeCount++;
@@ -583,7 +723,7 @@ export class RoadTestScene extends Phaser.Scene {
     if (this.arcade) audio.playMusic(this.police.state === 'pursuit' ? 'pursuit' : 'arcade');
     this.driveAudio.update(dt, buildDriveFrame({
       speedKph: s.speedKph, position: s.position, playerX: s.playerX, rpm: s.rpm, throttle: s.throttle, brake: s.brake,
-      skidding: s.skidding, surface: s.surface, shifting: s.shifting, damage: s.damage, fuel: s.fuel,
+      skidding: s.skidding, surface: s.surface, shifting: s.shifting, damage: s.damage, fuel: s.engineBlown ? 0 : s.fuel, // a dead engine is silent
       topSpeedKph: this.engineInit.topSpeedKph, idleRpm: this.engineInit.idleRpm, redlineRpm: this.engineInit.redlineRpm,
       trackLength: this.road.trackLength, unitsPerMetre: UNITS_PER_METRE, rain: this.weather.level.rain,
       traffic: this.trafficOn ? this.traffic.cars : [], police: this.police.units,
@@ -593,6 +733,7 @@ export class RoadTestScene extends Phaser.Scene {
     this.scenery.update(jolt);
     this.trafficView.setTimeOfDay(envHere.fixedLook ? 'day' : timeHere);
     this.trafficView.update(this.trafficOn ? this.traffic.cars : [], s.position, this.road.trackLength, jolt);
+    this.pickupView?.update(this.pickups.items, s.position, this.road.trackLength, jolt);
     this.policeView.setTimeOfDay(envHere.fixedLook ? 'day' : timeHere);
     this.policeView.update(this.police.units, s.position, this.road.trackLength, jolt);
     let nearestBehind = 1e9;

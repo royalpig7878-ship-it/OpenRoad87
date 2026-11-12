@@ -67,4 +67,10 @@ export const CHALLENGES: ChallengeDef[] = [
   },
 ];
 
+/**
+ * Cash for an arcade medal. Small on purpose: even gold every run pays less per minute than the worst rookie
+ * career job, so arcade is for scores and practice and career stays the way to earn.
+ */
+export const ARCADE_MEDAL_PAY: Record<Medal, number> = { none: 0, bronze: 75, silver: 125, gold: 200 };
+
 export const getChallenge = (id: string): ChallengeDef => CHALLENGES.find((c) => c.id === id) ?? CHALLENGES[0];

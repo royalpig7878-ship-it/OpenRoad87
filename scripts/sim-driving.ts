@@ -1,5 +1,5 @@
 // Headless checks of the driving model. Run: npm run test:sim
-import { DrivingModel } from '../src/systems/DrivingModel';
+import { BLOW_AFTER, DrivingModel, ENGINE_HOT } from '../src/systems/DrivingModel';
 import { VEHICLES } from '../src/vehicles/VehicleRoster';
 import { roadEdges } from '../src/road/RoadLayout';
 import { emptyInput, InputState } from '../src/controls/InputState';
@@ -17,14 +17,16 @@ const straight = { curve: 0, barrier: false };
 console.log('--- per-vehicle full-throttle run (auto) ---');
 for (const v of VEHICLES) {
   const m = new DrivingModel(v, edges, 1e9);
-  let t = 0, t100 = -1, t200 = -1, shifts = 0, maxRpm = 0, maxGear = 1;
+  let t = 0, t100 = -1, t200 = -1, shifts = 0, maxRpm = 0, maxGear = 1, maxTemp = 0;
   for (; t < 90; t += DT) {
+    m.state.engineTemp = 0.45; // performance only here: engine heat is checked in its own section
     const s = m.update(DT, inp({ throttle: 1 }), straight);
     if (t100 < 0 && s.speedKph >= 100) t100 = t;
     if (t200 < 0 && s.speedKph >= 200) t200 = t;
     if (s.events.includes('shift')) shifts++;
     maxRpm = Math.max(maxRpm, s.rpm);
     maxGear = Math.max(maxGear, s.gear);
+    maxTemp = Math.max(maxTemp, s.engineTemp);
   }
   const top = m.state.speedKph;
   console.log(`${v.name.padEnd(17)} 0-100: ${t100.toFixed(1)}s  0-200: ${t200 < 0 ? 'n/a' : t200.toFixed(1) + 's'}  speed@90s: ${top.toFixed(0)} (spec ${v.topSpeedKph})  gears: ${maxGear}  shifts: ${shifts}  maxRpm: ${maxRpm.toFixed(0)}`);
@@ -32,6 +34,7 @@ for (const v of VEHICLES) {
   check(`${v.name}: reaches >=96% of top speed`, top >= v.topSpeedKph * 0.96 && top <= v.topSpeedKph * 1.01);
   check(`${v.name}: RPM within redline`, maxRpm <= v.redlineRpm * 1.01);
   check(`${v.name}: uses all 6 gears`, maxGear === 6);
+
 }
 const t0 = (id: string) => VEHICLES.find((v) => v.id === id)!;
 
@@ -63,7 +66,7 @@ console.log('--- off-road ---');
 console.log('--- steering & curves ---');
 {
   const m = new DrivingModel(t0('night_hawk'), edges, 1e9);
-  m.state.speedKph = 100; m.transmission.gear = 3;
+  m.state.speedKph = 82; m.transmission.gear = 3;
   for (let i = 0; i < 60; i++) m.update(DT, inp({ throttle: 0.4, steer: 1 }), straight);
   check('steering right moves car right', m.state.playerX > 0.2, `(x=${m.state.playerX.toFixed(2)})`);
   const before = m.state.playerX;
@@ -161,7 +164,7 @@ console.log('--- fuel ---');
   for (let i = 0; i < 60 * 40; i++) m.update(DT, inp({ throttle: 1 }), straight);
   check('car coasts to a stop with no fuel', m.state.speedKph < 30, `(${m.state.speedKph.toFixed(0)} km/h)`);
   const full = new DrivingModel(t0('vortex_gt'), edges, 1e9);
-  for (let i = 0; i < 60 * 60; i++) full.update(DT, inp({ throttle: 1 }), straight);
+  for (let i = 0; i < 60 * 60; i++) { full.state.engineTemp = 0.45; full.update(DT, inp({ throttle: 1 }), straight); }
   const used = full.vehicle.fuelCapacity - full.state.fuel;
   check('a full tank lasts roughly 6-15 minutes at full throttle', used > 3 && used < 8.5, `(used ${used.toFixed(1)} L in 60s of ${full.vehicle.fuelCapacity} L)`);
 }
@@ -182,6 +185,104 @@ console.log('--- manual transmission ---');
   m.update(DT, inp({ gearDown: true }), straight);
   m.update(DT, inp({ gearDown: true }), straight);
   check('over-rev downshift is refused', m.state.gear > 2, `(gear ${m.state.gear})`);
+}
+
+console.log('--- engine heat and breakdowns ---');
+{
+  // Manual, stuck in 2nd with the throttle pinned: on the rev limiter.
+  const m = new DrivingModel(t0('vortex_gt'), edges, 1e9);
+  m.transmission.toggleMode();
+  m.update(DT, inp({ gearUp: true }), straight);
+  let hotAt = -1, overAt = -1, blownAt = -1, t = 0;
+  for (; t < 30 && blownAt < 0; t += DT) {
+    const s = m.update(DT, inp({ throttle: 1 }), straight);
+    if (s.events.includes('engine_hot')) hotAt = t;
+    if (s.events.includes('overheat')) overAt = t;
+    if (s.events.includes('engine_blown')) blownAt = t;
+  }
+  check('holding the redline (after a couple of seconds revving up) warns "engine hot" within 9 s', hotAt > 4 && hotAt < 9, `(${hotAt.toFixed(1)} s)`);
+  check('and overheats after 6-12 s', overAt > 6 && overAt < 12, `(${overAt.toFixed(1)} s)`);
+  check(`and blows the engine about ${BLOW_AFTER} s after overheating`, blownAt > overAt + BLOW_AFTER - 0.5 && blownAt < overAt + BLOW_AFTER + 2, `(${blownAt.toFixed(1)} s)`);
+  check('a blown engine adds damage', m.state.damage >= 20, `(${m.state.damage.toFixed(0)}%)`);
+  const v0 = m.state.speedKph;
+  for (let i = 0; i < 180; i++) m.update(DT, inp({ throttle: 1 }), straight);
+  check('a blown engine gives no power: the car coasts down', m.state.speedKph < v0 - 3 && m.state.rpm === 0, `(${v0.toFixed(0)} -> ${m.state.speedKph.toFixed(0)} km/h)`);
+  m.resetEngine();
+  check('towing/repairing resets the engine', !m.state.engineBlown && m.state.engineTemp < ENGINE_HOT);
+}
+{
+  // Overheat, then shift up and cruise: it cools and gets full power back without blowing.
+  const m = new DrivingModel(t0('vortex_gt'), edges, 1e9);
+  m.transmission.toggleMode();
+  m.update(DT, inp({ gearUp: true }), straight);
+  for (let t = 0; t < 30 && !m.state.overheated; t += DT) m.update(DT, inp({ throttle: 1 }), straight);
+  const limpAccel = (() => { const a = m.state.speedKph; return a; })();
+  check('limp mode is on once overheated', m.state.overheated);
+  for (let i = 0; i < 3; i++) { m.update(DT, inp({ gearUp: true }), straight); for (let k = 0; k < 20; k++) m.update(DT, inp({ throttle: 0.5 }), straight); }
+  let cooledAt = -1;
+  for (let t = 0; t < 40 && cooledAt < 0; t += DT) if (m.update(DT, inp({ throttle: 0.5 }), straight).events.includes('engine_cooled')) cooledAt = t;
+  check('shifting up and easing off cools it back to full power within 15 s', cooledAt > 0 && cooledAt < 15 && !m.state.engineBlown, `(${cooledAt.toFixed(1)} s, from ${limpAccel.toFixed(0)} km/h)`);
+}
+{
+  // Limp mode really costs power.
+  const a = new DrivingModel(t0('vortex_gt'), edges, 1e9);
+  const b = new DrivingModel(t0('vortex_gt'), edges, 1e9);
+  b.state.engineTemp = 1; b.state.overheated = true;
+  for (let i = 0; i < 120; i++) { a.update(DT, inp({ throttle: 1 }), straight); b.update(DT, inp({ throttle: 1 }), straight); }
+  check('an overheated car accelerates much slower', b.state.speedKph < a.state.speedKph * 0.75, `(${b.state.speedKph.toFixed(0)} vs ${a.state.speedKph.toFixed(0)} km/h after 2 s)`);
+}
+{
+  // Bad downshift.
+  const m = new DrivingModel(t0('vortex_gt'), edges, 1e9);
+  m.transmission.toggleMode();
+  m.state.speedKph = 82; m.transmission.gear = 3;
+  const s = m.update(DT, inp({ gearDown: true }), straight);
+  check('a downshift past the redline over-revs and does a little damage', s.events.includes('over_rev') && s.damage > 0 && s.damage < 10, `(${s.damage.toFixed(1)}%)`);
+}
+{
+  // Brake fade.
+  const m = new DrivingModel(t0('vortex_gt'), edges, 1e9);
+  let fadedAt = -1;
+  for (let stop = 0; stop < 6 && fadedAt < 0; stop++) {
+    m.state.speedKph = 200;
+    for (let t = 0; t < 10 && m.state.speedKph > 1; t += DT) if (m.update(DT, inp({ brake: 1 }), straight).events.includes('brakes_fading')) fadedAt = stop;
+  }
+  check('one hard stop from 200 does not fade the brakes, back-to-back stops do', fadedAt >= 1 && fadedAt <= 4, `(faded on stop ${fadedAt + 1})`);
+}
+
+{
+  // Automatic, pedal floored and never lifted: overheats too, just more slowly than sitting on the redline.
+  const m = new DrivingModel(t0('vortex_gt'), edges, 1e9);
+  let hotAt = -1, overAt = -1;
+  for (let t = 0; t < 60 && overAt < 0; t += DT) {
+    const s = m.update(DT, inp({ throttle: 1 }), straight);
+    if (s.events.includes('engine_hot')) hotAt = t;
+    if (s.events.includes('overheat')) overAt = t;
+  }
+  check('automatic floored: "engine hot" after 12-20 s', hotAt > 12 && hotAt < 20, `(${hotAt.toFixed(1)} s)`);
+  check('automatic floored: overheats after 20-32 s', overAt > 20 && overAt < 32, `(${overAt.toFixed(1)} s)`);
+  // Lifting off for a moment every 10 s keeps it from overheating.
+  const c = new DrivingModel(t0('vortex_gt'), edges, 1e9);
+  let maxT = 0;
+  for (let t = 0; t < 90; t += DT) { const s = c.update(DT, inp({ throttle: t % 10 < 7 ? 1 : 0.6 }), straight); maxT = Math.max(maxT, s.engineTemp); }
+  check('easing to part throttle now and then keeps it from overheating', maxT < 1, `(max ${maxT.toFixed(2)})`);
+}
+{
+  // Pickups.
+  const m = new DrivingModel(t0('vortex_gt'), edges, 1e9, 10, 60);
+  m.addFuel(1000);
+  check('gas pickup fills up to the tank size', m.state.fuel === m.vehicle.fuelCapacity);
+  m.repairBy(25);
+  check('repair pickup takes damage off', Math.abs(m.state.damage - 35) < 0.01, `(${m.state.damage})`);
+  const a = new DrivingModel(t0('vortex_gt'), edges, 1e9);
+  const b = new DrivingModel(t0('vortex_gt'), edges, 1e9);
+  for (let i = 0; i < 60 * 40; i++) { a.update(DT, inp({ throttle: 0.9 }), straight); b.update(DT, inp({ throttle: 0.9 }), straight); }
+  b.startBoost();
+  let peak = 0;
+  for (let i = 0; i < 60 * 4; i++) { a.update(DT, inp({ throttle: 0.9 }), straight); peak = Math.max(peak, b.update(DT, inp({ throttle: 0.9 }), straight).speedKph); }
+  check('boost pushes past normal top speed', peak > a.state.speedKph + 8 && peak <= m.vehicle.topSpeedKph * 1.16, `(${peak.toFixed(0)} vs ${a.state.speedKph.toFixed(0)} km/h)`);
+  for (let i = 0; i < 60 * 10; i++) b.update(DT, inp({ throttle: 0.9 }), straight);
+  check('and wears off afterwards', !b.state.boosting && b.state.speedKph < peak - 5, `(${b.state.speedKph.toFixed(0)} km/h)`);
 }
 
 console.log(failures === 0 ? '\nALL CHECKS PASSED' : `\n${failures} CHECK(S) FAILED`);

@@ -3,8 +3,12 @@ import { VehicleSpec } from '../vehicles/VehicleSpec';
 export type TransmissionMode = 'auto' | 'manual';
 
 export const GEAR_COUNT = 6;
-/** Fraction of top speed reached at the redline of each gear. Gear 6 tops out at 100%. */
-const GEAR_FRACTIONS = [0.2, 0.36, 0.53, 0.7, 0.86, 1.0];
+/**
+ * Fraction of top speed reached at the redline of each gear. Gear 6 is an overdrive: top speed comes from drag and
+ * the speed limiter at about 91% revs, so cruising flat out in top gear is not sitting on the redline (which would
+ * overheat the engine).
+ */
+const GEAR_FRACTIONS = [0.2, 0.36, 0.53, 0.7, 0.86, 1.1];
 const SHIFT_TIME = 0.25;
 const AUTO_COOLDOWN = 0.5;
 

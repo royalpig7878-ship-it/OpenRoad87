@@ -5,7 +5,8 @@ import { noiseHit, tone } from './synth';
 export type SfxName =
   | 'shift' | 'turboBlow' | 'crash' | 'scrape' | 'nearMiss' | 'passBy' | 'sputter' | 'tick'
   | 'uiMove' | 'uiSelect' | 'uiBack' | 'uiError' | 'cash'
-  | 'countBeep' | 'go' | 'checkpoint' | 'fanfare' | 'busted' | 'escaped' | 'rankUp';
+  | 'countBeep' | 'go' | 'checkpoint' | 'fanfare' | 'busted' | 'escaped' | 'rankUp'
+  | 'steam' | 'blowup';
 
 export interface SfxOpts {
   /** 0..1 strength (impact speed, etc.) */
@@ -64,6 +65,16 @@ export function playSfx(ctx: BaseAudioContext, dest: AudioNode, name: SfxName, o
     case 'sputter': // engine dying: a few stuttering coughs
       for (let i = 0; i < 4; i++) tone(ctx, dest, { type: 'sawtooth', freq: 70 - i * 6, t: t + i * 0.12, dur: 0.09, gain: 0.35, lowpass: 300 });
       break;
+    case 'steam': // radiator boiling over: a long hiss
+      noiseHit(ctx, dest, { t, dur: 1.4, gain: 0.28, filter: 'highpass', freq: 3200, freqEnd: 2000 });
+      break;
+    case 'blowup': { // engine letting go: a bang, a metallic clatter, then a hiss
+      tone(ctx, dest, { type: 'sine', freq: 90, freqEnd: 30, t, dur: 0.5, gain: 0.9 });
+      noiseHit(ctx, dest, { t, dur: 0.45, gain: 0.8, filter: 'lowpass', freq: 2500, freqEnd: 200 });
+      for (let i = 0; i < 5; i++) tone(ctx, dest, { type: 'square', freq: 260 - i * 30, t: t + 0.1 + i * 0.07, dur: 0.05, gain: 0.2, lowpass: 1600 });
+      noiseHit(ctx, dest, { t: t + 0.4, dur: 1.6, gain: 0.25, filter: 'highpass', freq: 2800, freqEnd: 1600 });
+      break;
+    }
     case 'tick': // turn-signal relay
       tone(ctx, dest, { type: 'square', freq: (o.n ?? 0) % 2 ? 1500 : 1100, t, dur: 0.025, gain: 0.1 });
       break;

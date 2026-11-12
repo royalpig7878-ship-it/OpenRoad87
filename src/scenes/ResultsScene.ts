@@ -17,6 +17,8 @@ export interface ResultsData {
   /** Set when the run was a career job. */
   jobId?: string;
   career?: CareerOutcome;
+  /** Arcade (not career): cash paid for the medal. */
+  arcadePay?: number;
 }
 
 const HEADLINE: Record<Outcome, [string, string]> = {
@@ -24,6 +26,7 @@ const HEADLINE: Record<Outcome, [string, string]> = {
   time_up: ['TIME UP', '#ffd23f'],
   wrecked: ['WRECKED', '#ff5a4a'],
   out_of_fuel: ['OUT OF FUEL', '#ff5a4a'],
+  engine_blown: ['ENGINE BLOWN', '#ff5a4a'],
   busted: ['BUSTED', '#ff5a4a'],
   speed_lost: ['SPEED LOST', '#ffd23f'],
   escaped: ['ESCAPED!', '#60ff90'],
@@ -88,6 +91,11 @@ export class ResultsScene extends Phaser.Scene {
       if (career.rankedUp) line(`RANK UP!  ${career.rankBefore} -> ${career.rankAfter}`, '#ffd23f');
       for (const id of career.unlockedEnvs) line(`NEW ROAD UNLOCKED: ${getEnvironment(id).name.toUpperCase()}`, '#ffd23f');
       if (career.unlockedJobs.length) line(`${career.unlockedJobs.length} NEW JOB${career.unlockedJobs.length > 1 ? 'S' : ''} AVAILABLE`, '#ffd23f');
+    }
+
+    if (!career && this.data0.arcadePay !== undefined) {
+      const pay = this.data0.arcadePay;
+      this.add.text(480, y + 34, pay > 0 ? `MEDAL PAY  $${pay.toLocaleString('en-US')}` : 'NO MEDAL - NO PAY', style(15, pay > 0 ? '#60ff90' : Colors.grey)).setOrigin(0.5, 0);
     }
 
     // Medal.

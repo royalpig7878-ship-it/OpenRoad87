@@ -113,6 +113,8 @@ console.log('--- other ending conditions ---');
 {
   const fuel = play('distance', 150, 400, (t, f) => { if (t > 10) { f.fuel = 0; f.speedKph = 0; } });
   check('running out of fuel and stopping ends the run', fuel.s.result!.outcome === 'out_of_fuel');
+  const blown = play('distance', 150, 400, (t, f) => { if (t > 10) { f.engineBlown = true; f.speedKph = 0; } });
+  check('a blown engine ends the run once the car stops', blown.s.result!.outcome === 'engine_blown' && !blown.s.result!.success);
 }
 
 console.log('--- medals and challenge data ---');
