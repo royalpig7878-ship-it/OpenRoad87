@@ -36,7 +36,7 @@ npm run preview    # serves dist/ locally (default http://localhost:4173)
 
 Main menu: **Arcade** (six scored challenges), **Career** (15 jobs, reputation and unlocks), **Garage** (buy,
 upgrade and repair cars), **Settings** (volume, touch options, graphics, fullscreen, key rebinding, save export /
-import / reset). Progress saves automatically in the browser. See `docs/CONTROLS.md` for everything.
+import / reset). Progress saves automatically in the browser. See `notes/CONTROLS.md` for everything.
 
 ## Check it
 
@@ -52,7 +52,7 @@ npm run bench           # per-frame allocation and draw-call benchmark
   `economy/`, `arcade/`, `career/`, `audio/`, `controls/`, `save/`, `UI/`, `scenes/`
 - `public/assets/` the art (PNG and JSON metadata)
 - `scripts/` simulations, benchmark and asset tools
-- `docs/` design, architecture, controls, art style, asset catalog, roadmap and the bug log
+- `notes/` design, architecture, controls, art style, asset catalog, roadmap and the bug log
 
-Known limitations and open items are listed in `docs/BUG_LOG.md`; what each milestone delivered is in
-`docs/DEVELOPMENT_ROADMAP.md`.
+Known limitations and open items are listed in `notes/BUG_LOG.md`; what each milestone delivered is in
+`notes/DEVELOPMENT_ROADMAP.md`.

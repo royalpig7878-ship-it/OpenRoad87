@@ -1,0 +1,1576 @@
+{
+ "cockpits/anim_headlights.png": {
+  "category": "cockpits",
+  "bytes": 888,
+  "w": 512,
+  "h": 48
+ },
+ "cockpits/anim_steering_wheel.png": {
+  "category": "cockpits",
+  "bytes": 15083,
+  "w": 1280,
+  "h": 256
+ },
+ "cockpits/anim_turn_signals.png": {
+  "category": "cockpits",
+  "bytes": 430,
+  "w": 192,
+  "h": 32
+ },
+ "cockpits/cockpit_apex_xr.png": {
+  "category": "cockpits",
+  "bytes": 9421,
+  "w": 960,
+  "h": 540,
+  "windshieldTransparent": true
+ },
+ "cockpits/cockpit_apex_xr_dash.png": {
+  "category": "cockpits",
+  "bytes": 8275,
+  "w": 960,
+  "h": 540,
+  "windshieldTransparent": true
+ },
+ "cockpits/cockpit_night_hawk.png": {
+  "category": "cockpits",
+  "bytes": 9878,
+  "w": 960,
+  "h": 540,
+  "windshieldTransparent": true
+ },
+ "cockpits/cockpit_night_hawk_dash.png": {
+  "category": "cockpits",
+  "bytes": 8391,
+  "w": 960,
+  "h": 540,
+  "windshieldTransparent": true
+ },
+ "cockpits/cockpit_phantom_x.png": {
+  "category": "cockpits",
+  "bytes": 8503,
+  "w": 960,
+  "h": 540,
+  "windshieldTransparent": true
+ },
+ "cockpits/cockpit_phantom_x_dash.png": {
+  "category": "cockpits",
+  "bytes": 6773,
+  "w": 960,
+  "h": 540,
+  "windshieldTransparent": true
+ },
+ "cockpits/cockpit_silverline_turbo.png": {
+  "category": "cockpits",
+  "bytes": 9112,
+  "w": 960,
+  "h": 540,
+  "windshieldTransparent": true
+ },
+ "cockpits/cockpit_silverline_turbo_dash.png": {
+  "category": "cockpits",
+  "bytes": 7870,
+  "w": 960,
+  "h": 540,
+  "windshieldTransparent": true
+ },
+ "cockpits/cockpit_thunder_v8.png": {
+  "category": "cockpits",
+  "bytes": 9571,
+  "w": 960,
+  "h": 540,
+  "windshieldTransparent": true
+ },
+ "cockpits/cockpit_thunder_v8_dash.png": {
+  "category": "cockpits",
+  "bytes": 7926,
+  "w": 960,
+  "h": 540,
+  "windshieldTransparent": true
+ },
+ "cockpits/cockpit_vortex_gt.png": {
+  "category": "cockpits",
+  "bytes": 8418,
+  "w": 960,
+  "h": 540,
+  "windshieldTransparent": true
+ },
+ "cockpits/cockpit_vortex_gt_dash.png": {
+  "category": "cockpits",
+  "bytes": 6931,
+  "w": 960,
+  "h": 540,
+  "windshieldTransparent": true
+ },
+ "cockpits/dashboard_buttons.png": {
+  "category": "cockpits",
+  "bytes": 407,
+  "w": 248,
+  "h": 48
+ },
+ "cockpits/dashboard_warnings.png": {
+  "category": "cockpits",
+  "bytes": 231,
+  "w": 154,
+  "h": 16
+ },
+ "cockpits/gauge_apex_xr_boost.png": {
+  "category": "cockpits",
+  "bytes": 457,
+  "w": 70,
+  "h": 70
+ },
+ "cockpits/gauge_apex_xr_clock.png": {
+  "category": "cockpits",
+  "bytes": 427,
+  "w": 70,
+  "h": 70
+ },
+ "cockpits/gauge_apex_xr_fuel.png": {
+  "category": "cockpits",
+  "bytes": 440,
+  "w": 70,
+  "h": 70
+ },
+ "cockpits/gauge_apex_xr_oil.png": {
+  "category": "cockpits",
+  "bytes": 425,
+  "w": 70,
+  "h": 70
+ },
+ "cockpits/gauge_apex_xr_rpm.png": {
+  "category": "cockpits",
+  "bytes": 788,
+  "w": 110,
+  "h": 110
+ },
+ "cockpits/gauge_apex_xr_speedo.png": {
+  "category": "cockpits",
+  "bytes": 820,
+  "w": 110,
+  "h": 110
+ },
+ "cockpits/gauge_apex_xr_temp.png": {
+  "category": "cockpits",
+  "bytes": 446,
+  "w": 70,
+  "h": 70
+ },
+ "cockpits/gauge_apex_xr_volts.png": {
+  "category": "cockpits",
+  "bytes": 446,
+  "w": 70,
+  "h": 70
+ },
+ "cockpits/gauge_fuel.png": {
+  "category": "cockpits",
+  "bytes": 470,
+  "w": 78,
+  "h": 78
+ },
+ "cockpits/gauge_needle.png": {
+  "category": "cockpits",
+  "bytes": 125,
+  "w": 44,
+  "h": 6
+ },
+ "cockpits/gauge_night_hawk_clock.png": {
+  "category": "cockpits",
+  "bytes": 455,
+  "w": 78,
+  "h": 78
+ },
+ "cockpits/gauge_night_hawk_oil.png": {
+  "category": "cockpits",
+  "bytes": 458,
+  "w": 78,
+  "h": 78
+ },
+ "cockpits/gauge_night_hawk_rpm.png": {
+  "category": "cockpits",
+  "bytes": 788,
+  "w": 110,
+  "h": 110
+ },
+ "cockpits/gauge_night_hawk_speedo.png": {
+  "category": "cockpits",
+  "bytes": 817,
+  "w": 110,
+  "h": 110
+ },
+ "cockpits/gauge_night_hawk_temp.png": {
+  "category": "cockpits",
+  "bytes": 477,
+  "w": 78,
+  "h": 78
+ },
+ "cockpits/gauge_phantom_x_fuel.png": {
+  "category": "cockpits",
+  "bytes": 470,
+  "w": 78,
+  "h": 78
+ },
+ "cockpits/gauge_phantom_x_rpm.png": {
+  "category": "cockpits",
+  "bytes": 788,
+  "w": 110,
+  "h": 110
+ },
+ "cockpits/gauge_phantom_x_speedo.png": {
+  "category": "cockpits",
+  "bytes": 817,
+  "w": 110,
+  "h": 110
+ },
+ "cockpits/gauge_phantom_x_temp.png": {
+  "category": "cockpits",
+  "bytes": 477,
+  "w": 78,
+  "h": 78
+ },
+ "cockpits/gauge_rpm.png": {
+  "category": "cockpits",
+  "bytes": 788,
+  "w": 110,
+  "h": 110
+ },
+ "cockpits/gauge_silverline_turbo_boost.png": {
+  "category": "cockpits",
+  "bytes": 323,
+  "w": 50,
+  "h": 50
+ },
+ "cockpits/gauge_silverline_turbo_fuel.png": {
+  "category": "cockpits",
+  "bytes": 440,
+  "w": 70,
+  "h": 70
+ },
+ "cockpits/gauge_silverline_turbo_oil.png": {
+  "category": "cockpits",
+  "bytes": 425,
+  "w": 70,
+  "h": 70
+ },
+ "cockpits/gauge_silverline_turbo_rpm.png": {
+  "category": "cockpits",
+  "bytes": 788,
+  "w": 110,
+  "h": 110
+ },
+ "cockpits/gauge_silverline_turbo_speedo.png": {
+  "category": "cockpits",
+  "bytes": 816,
+  "w": 110,
+  "h": 110
+ },
+ "cockpits/gauge_silverline_turbo_temp.png": {
+  "category": "cockpits",
+  "bytes": 446,
+  "w": 70,
+  "h": 70
+ },
+ "cockpits/gauge_silverline_turbo_volts.png": {
+  "category": "cockpits",
+  "bytes": 446,
+  "w": 70,
+  "h": 70
+ },
+ "cockpits/gauge_speedometer.png": {
+  "category": "cockpits",
+  "bytes": 803,
+  "w": 110,
+  "h": 110
+ },
+ "cockpits/gauge_temperature.png": {
+  "category": "cockpits",
+  "bytes": 477,
+  "w": 78,
+  "h": 78
+ },
+ "cockpits/gauge_thunder_v8_fuel.png": {
+  "category": "cockpits",
+  "bytes": 470,
+  "w": 78,
+  "h": 78
+ },
+ "cockpits/gauge_thunder_v8_rpm.png": {
+  "category": "cockpits",
+  "bytes": 788,
+  "w": 110,
+  "h": 110
+ },
+ "cockpits/gauge_thunder_v8_speedo.png": {
+  "category": "cockpits",
+  "bytes": 810,
+  "w": 110,
+  "h": 110
+ },
+ "cockpits/gauge_thunder_v8_temp.png": {
+  "category": "cockpits",
+  "bytes": 477,
+  "w": 78,
+  "h": 78
+ },
+ "cockpits/gauge_vortex_gt_clock.png": {
+  "category": "cockpits",
+  "bytes": 325,
+  "w": 50,
+  "h": 50
+ },
+ "cockpits/gauge_vortex_gt_fuel.png": {
+  "category": "cockpits",
+  "bytes": 470,
+  "w": 78,
+  "h": 78
+ },
+ "cockpits/gauge_vortex_gt_rpm.png": {
+  "category": "cockpits",
+  "bytes": 788,
+  "w": 110,
+  "h": 110
+ },
+ "cockpits/gauge_vortex_gt_speedo.png": {
+  "category": "cockpits",
+  "bytes": 816,
+  "w": 110,
+  "h": 110
+ },
+ "cockpits/gauge_vortex_gt_volts.png": {
+  "category": "cockpits",
+  "bytes": 475,
+  "w": 78,
+  "h": 78
+ },
+ "cockpits/gear_indicator.png": {
+  "category": "cockpits",
+  "bytes": 182,
+  "w": 88,
+  "h": 30
+ },
+ "cockpits/mirror_glint.png": {
+  "category": "cockpits",
+  "bytes": 199,
+  "w": 232,
+  "h": 40
+ },
+ "cockpits/placements.json": {
+  "category": "cockpits",
+  "bytes": 11245
+ },
+ "cockpits/steering_wheel.png": {
+  "category": "cockpits",
+  "bytes": 2555,
+  "w": 478,
+  "h": 422
+ },
+ "cockpits/steering_wheel_apex_xr_rim.png": {
+  "category": "cockpits",
+  "bytes": 1892,
+  "w": 434,
+  "h": 406
+ },
+ "cockpits/steering_wheel_apex_xr_spokes.png": {
+  "category": "cockpits",
+  "bytes": 10963,
+  "w": 1736,
+  "h": 1370
+ },
+ "cockpits/steering_wheel_night_hawk_rim.png": {
+  "category": "cockpits",
+  "bytes": 2517,
+  "w": 434,
+  "h": 406
+ },
+ "cockpits/steering_wheel_night_hawk_spokes.png": {
+  "category": "cockpits",
+  "bytes": 12596,
+  "w": 1736,
+  "h": 1350
+ },
+ "cockpits/steering_wheel_phantom_x_rim.png": {
+  "category": "cockpits",
+  "bytes": 2406,
+  "w": 418,
+  "h": 374
+ },
+ "cockpits/steering_wheel_phantom_x_spokes.png": {
+  "category": "cockpits",
+  "bytes": 9956,
+  "w": 1672,
+  "h": 1270
+ },
+ "cockpits/steering_wheel_silverline_turbo_rim.png": {
+  "category": "cockpits",
+  "bytes": 2149,
+  "w": 406,
+  "h": 398
+ },
+ "cockpits/steering_wheel_silverline_turbo_spokes.png": {
+  "category": "cockpits",
+  "bytes": 11201,
+  "w": 1624,
+  "h": 1350
+ },
+ "cockpits/steering_wheel_thunder_v8_rim.png": {
+  "category": "cockpits",
+  "bytes": 2934,
+  "w": 438,
+  "h": 374
+ },
+ "cockpits/steering_wheel_thunder_v8_spokes.png": {
+  "category": "cockpits",
+  "bytes": 11513,
+  "w": 1752,
+  "h": 1290
+ },
+ "cockpits/steering_wheel_vortex_gt_rim.png": {
+  "category": "cockpits",
+  "bytes": 2059,
+  "w": 454,
+  "h": 406
+ },
+ "cockpits/steering_wheel_vortex_gt_spokes.png": {
+  "category": "cockpits",
+  "bytes": 11658,
+  "w": 1816,
+  "h": 1360
+ },
+ "effects/anims.json": {
+  "category": "effects",
+  "bytes": 2275
+ },
+ "effects/anim_dust.png": {
+  "category": "effects",
+  "bytes": 2730,
+  "w": 768,
+  "h": 96
+ },
+ "effects/anim_lightning.png": {
+  "category": "effects",
+  "bytes": 3736,
+  "w": 1024,
+  "h": 300
+ },
+ "effects/anim_police_lights.png": {
+  "category": "effects",
+  "bytes": 381,
+  "w": 768,
+  "h": 128
+ },
+ "effects/anim_rain.png": {
+  "category": "effects",
+  "bytes": 63573,
+  "w": 3840,
+  "h": 1080
+ },
+ "effects/anim_sparks.png": {
+  "category": "effects",
+  "bytes": 2590,
+  "w": 1024,
+  "h": 128
+ },
+ "effects/anim_tire_smoke.png": {
+  "category": "effects",
+  "bytes": 3532,
+  "w": 1024,
+  "h": 96
+ },
+ "effects/fx.json": {
+  "category": "effects",
+  "bytes": 2971
+ },
+ "effects/fx_collision_sparks.png": {
+  "category": "effects",
+  "bytes": 2590,
+  "w": 1024,
+  "h": 128
+ },
+ "effects/fx_crash_impact.png": {
+  "category": "effects",
+  "bytes": 3615,
+  "w": 1024,
+  "h": 128
+ },
+ "effects/fx_crash_smoke.png": {
+  "category": "effects",
+  "bytes": 5661,
+  "w": 1024,
+  "h": 128
+ },
+ "effects/fx_dust.png": {
+  "category": "effects",
+  "bytes": 3529,
+  "w": 1024,
+  "h": 96
+ },
+ "effects/fx_fog_overlay.png": {
+  "category": "effects",
+  "bytes": 18948,
+  "w": 960,
+  "h": 540
+ },
+ "effects/fx_headlight_glow.png": {
+  "category": "effects",
+  "bytes": 4359,
+  "w": 960,
+  "h": 540
+ },
+ "effects/fx_lightning.png": {
+  "category": "effects",
+  "bytes": 3736,
+  "w": 1024,
+  "h": 300
+ },
+ "effects/fx_rain_overlay.png": {
+  "category": "effects",
+  "bytes": 63573,
+  "w": 3840,
+  "h": 1080
+ },
+ "effects/fx_rain_splashes.png": {
+  "category": "effects",
+  "bytes": 28133,
+  "w": 3840,
+  "h": 1080
+ },
+ "effects/fx_speed_lines.png": {
+  "category": "effects",
+  "bytes": 8686,
+  "w": 3840,
+  "h": 540
+ },
+ "effects/fx_tire_smoke.png": {
+  "category": "effects",
+  "bytes": 3532,
+  "w": 1024,
+  "h": 96
+ },
+ "manifest.json": {
+  "category": "manifest.json",
+  "bytes": 26515
+ },
+ "menus/career.json": {
+  "category": "menus",
+  "bytes": 1801
+ },
+ "menus/career_medal.png": {
+  "category": "menus",
+  "bytes": 1771,
+  "w": 96,
+  "h": 128
+ },
+ "menus/career_trophy.png": {
+  "category": "menus",
+  "bytes": 1845,
+  "w": 128,
+  "h": 176
+ },
+ "menus/career_trophy_room.png": {
+  "category": "menus",
+  "bytes": 42825,
+  "w": 960,
+  "h": 540
+ },
+ "menus/dealer_salesman.png": {
+  "category": "menus",
+  "bytes": 1340,
+  "w": 80,
+  "h": 144
+ },
+ "menus/dealer_showroom.png": {
+  "category": "menus",
+  "bytes": 32819,
+  "w": 960,
+  "h": 540
+ },
+ "menus/garage_background.png": {
+  "category": "menus",
+  "bytes": 40877,
+  "w": 960,
+  "h": 540
+ },
+ "menus/garage_lift.png": {
+  "category": "menus",
+  "bytes": 2543,
+  "w": 384,
+  "h": 256
+ },
+ "menus/garage_mechanic.png": {
+  "category": "menus",
+  "bytes": 1521,
+  "w": 80,
+  "h": 144
+ },
+ "menus/garage_toolbox.png": {
+  "category": "menus",
+  "bytes": 1441,
+  "w": 128,
+  "h": 176
+ },
+ "menus/garage_workbench.png": {
+  "category": "menus",
+  "bytes": 2542,
+  "w": 288,
+  "h": 160
+ },
+ "menus/menu_arcade_background.png": {
+  "category": "menus",
+  "bytes": 21887,
+  "w": 960,
+  "h": 540
+ },
+ "menus/menu_career_background.png": {
+  "category": "menus",
+  "bytes": 26267,
+  "w": 960,
+  "h": 540
+ },
+ "menus/menu_game_over.png": {
+  "category": "menus",
+  "bytes": 74212,
+  "w": 960,
+  "h": 540
+ },
+ "menus/menu_garage_background.png": {
+  "category": "menus",
+  "bytes": 30988,
+  "w": 960,
+  "h": 540
+ },
+ "menus/menu_pause.png": {
+  "category": "menus",
+  "bytes": 4216,
+  "w": 960,
+  "h": 540
+ },
+ "menus/menu_results.png": {
+  "category": "menus",
+  "bytes": 21034,
+  "w": 960,
+  "h": 540
+ },
+ "menus/menu_title_background.png": {
+  "category": "menus",
+  "bytes": 23375,
+  "w": 960,
+  "h": 540
+ },
+ "menus/menu_vehicle_select.png": {
+  "category": "menus",
+  "bytes": 21029,
+  "w": 960,
+  "h": 540
+ },
+ "police/police_cruiser_back_blue.png": {
+  "category": "police",
+  "bytes": 709,
+  "w": 147,
+  "h": 115
+ },
+ "police/police_cruiser_back_off.png": {
+  "category": "police",
+  "bytes": 699,
+  "w": 147,
+  "h": 115
+ },
+ "police/police_cruiser_back_on.png": {
+  "category": "police",
+  "bytes": 719,
+  "w": 147,
+  "h": 115
+ },
+ "police/police_cruiser_back_red.png": {
+  "category": "police",
+  "bytes": 711,
+  "w": 147,
+  "h": 115
+ },
+ "police/police_cruiser_front.png": {
+  "category": "police",
+  "bytes": 1497,
+  "w": 192,
+  "h": 128
+ },
+ "police/police_cruiser_lights.json": {
+  "category": "police",
+  "bytes": 1509
+ },
+ "police/police_cruiser_lights.png": {
+  "category": "police",
+  "bytes": 2132,
+  "w": 768,
+  "h": 128
+ },
+ "police/police_cruiser_rear.png": {
+  "category": "police",
+  "bytes": 1452,
+  "w": 192,
+  "h": 128
+ },
+ "police/police_cruiser_side.png": {
+  "category": "police",
+  "bytes": 1552,
+  "w": 256,
+  "h": 128
+ },
+ "police/police_helicopter.png": {
+  "category": "police",
+  "bytes": 1166,
+  "w": 192,
+  "h": 128
+ },
+ "police/police_helicopter_anim.json": {
+  "category": "police",
+  "bytes": 1511
+ },
+ "police/police_helicopter_anim.png": {
+  "category": "police",
+  "bytes": 1829,
+  "w": 768,
+  "h": 128
+ },
+ "police/police_lights_off.png": {
+  "category": "police",
+  "bytes": 208,
+  "w": 192,
+  "h": 128
+ },
+ "police/police_lights_on.png": {
+  "category": "police",
+  "bytes": 249,
+  "w": 192,
+  "h": 128
+ },
+ "roads/road_bridge.png": {
+  "category": "roads",
+  "bytes": 777,
+  "w": 512,
+  "h": 160
+ },
+ "roads/road_concrete_barrier.png": {
+  "category": "roads",
+  "bytes": 265,
+  "w": 44,
+  "h": 35
+ },
+ "roads/road_guardrail.png": {
+  "category": "roads",
+  "bytes": 195,
+  "w": 128,
+  "h": 24
+ },
+ "roads/road_lamppost.png": {
+  "category": "roads",
+  "bytes": 370,
+  "w": 112,
+  "h": 192
+ },
+ "roads/road_mile_marker.png": {
+  "category": "roads",
+  "bytes": 242,
+  "w": 32,
+  "h": 112
+ },
+ "roads/road_toll_booth.png": {
+  "category": "roads",
+  "bytes": 689,
+  "w": 173,
+  "h": 102
+ },
+ "roads/road_tunnel.png": {
+  "category": "roads",
+  "bytes": 1198,
+  "w": 320,
+  "h": 208
+ },
+ "roads/sign_exit.png": {
+  "category": "roads",
+  "bytes": 435,
+  "w": 128,
+  "h": 192
+ },
+ "roads/sign_fuel.png": {
+  "category": "roads",
+  "bytes": 350,
+  "w": 128,
+  "h": 192
+ },
+ "roads/sign_rest_area.png": {
+  "category": "roads",
+  "bytes": 418,
+  "w": 128,
+  "h": 192
+ },
+ "roads/sign_speed_limit.png": {
+  "category": "roads",
+  "bytes": 376,
+  "w": 128,
+  "h": 192
+ },
+ "roads/sign_speed_limit_65.png": {
+  "category": "roads",
+  "bytes": 376,
+  "w": 128,
+  "h": 192
+ },
+ "roads/sign_speed_limit_75.png": {
+  "category": "roads",
+  "bytes": 387,
+  "w": 128,
+  "h": 192
+ },
+ "roads/sign_warning_curve.png": {
+  "category": "roads",
+  "bytes": 552,
+  "w": 128,
+  "h": 192
+ },
+ "roads/sign_warning_grade.png": {
+  "category": "roads",
+  "bytes": 547,
+  "w": 128,
+  "h": 192
+ },
+ "roads/sign_warning_mountain_pass.png": {
+  "category": "roads",
+  "bytes": 650,
+  "w": 128,
+  "h": 192
+ },
+ "scenery/coastal_beach_rocks.png": {
+  "category": "scenery",
+  "bytes": 377,
+  "w": 80,
+  "h": 36
+ },
+ "scenery/coastal_beach_umbrella.png": {
+  "category": "scenery",
+  "bytes": 407,
+  "w": 96,
+  "h": 104
+ },
+ "scenery/coastal_cliff.png": {
+  "category": "scenery",
+  "bytes": 2338,
+  "w": 224,
+  "h": 160
+ },
+ "scenery/coastal_dune_grass.png": {
+  "category": "scenery",
+  "bytes": 444,
+  "w": 48,
+  "h": 42
+ },
+ "scenery/coastal_guardrail.png": {
+  "category": "scenery",
+  "bytes": 182,
+  "w": 128,
+  "h": 24
+ },
+ "scenery/coastal_lighthouse.png": {
+  "category": "scenery",
+  "bytes": 901,
+  "w": 96,
+  "h": 192
+ },
+ "scenery/coastal_ocean_background.png": {
+  "category": "scenery",
+  "bytes": 3163,
+  "w": 960,
+  "h": 160
+ },
+ "scenery/coastal_palm_tree.png": {
+  "category": "scenery",
+  "bytes": 2529,
+  "w": 192,
+  "h": 224
+ },
+ "scenery/coastal_road_sign.png": {
+  "category": "scenery",
+  "bytes": 524,
+  "w": 128,
+  "h": 192
+ },
+ "scenery/country_barn.png": {
+  "category": "scenery",
+  "bytes": 1930,
+  "w": 273,
+  "h": 216
+ },
+ "scenery/country_corn.png": {
+  "category": "scenery",
+  "bytes": 1255,
+  "w": 72,
+  "h": 96
+ },
+ "scenery/country_farmhouse.png": {
+  "category": "scenery",
+  "bytes": 1602,
+  "w": 202,
+  "h": 188
+ },
+ "scenery/country_haybale.png": {
+  "category": "scenery",
+  "bytes": 501,
+  "w": 60,
+  "h": 50
+ },
+ "scenery/country_mailbox.png": {
+  "category": "scenery",
+  "bytes": 177,
+  "w": 28,
+  "h": 60
+ },
+ "scenery/country_telephone_pole.png": {
+  "category": "scenery",
+  "bytes": 526,
+  "w": 64,
+  "h": 192
+ },
+ "scenery/country_wheat.png": {
+  "category": "scenery",
+  "bytes": 561,
+  "w": 56,
+  "h": 34
+ },
+ "scenery/country_windmill.png": {
+  "category": "scenery",
+  "bytes": 2425,
+  "w": 112,
+  "h": 224
+ },
+ "scenery/desert_billboard.png": {
+  "category": "scenery",
+  "bytes": 1172,
+  "w": 224,
+  "h": 176
+ },
+ "scenery/desert_bush.png": {
+  "category": "scenery",
+  "bytes": 465,
+  "w": 56,
+  "h": 32
+ },
+ "scenery/desert_cactus_large.png": {
+  "category": "scenery",
+  "bytes": 774,
+  "w": 80,
+  "h": 160
+ },
+ "scenery/desert_cactus_small.png": {
+  "category": "scenery",
+  "bytes": 480,
+  "w": 40,
+  "h": 48
+ },
+ "scenery/desert_dry_grass.png": {
+  "category": "scenery",
+  "bytes": 297,
+  "w": 44,
+  "h": 26
+ },
+ "scenery/desert_gas_station.png": {
+  "category": "scenery",
+  "bytes": 1209,
+  "w": 402,
+  "h": 188
+ },
+ "scenery/desert_guardrail.png": {
+  "category": "scenery",
+  "bytes": 214,
+  "w": 128,
+  "h": 24
+ },
+ "scenery/desert_joshua_tree.png": {
+  "category": "scenery",
+  "bytes": 1105,
+  "w": 96,
+  "h": 160
+ },
+ "scenery/desert_mesa.png": {
+  "category": "scenery",
+  "bytes": 2871,
+  "w": 960,
+  "h": 160
+ },
+ "scenery/desert_rock.png": {
+  "category": "scenery",
+  "bytes": 1547,
+  "w": 176,
+  "h": 112
+ },
+ "scenery/desert_rock_small.png": {
+  "category": "scenery",
+  "bytes": 384,
+  "w": 72,
+  "h": 40
+ },
+ "scenery/desert_tumbleweed.png": {
+  "category": "scenery",
+  "bytes": 432,
+  "w": 40,
+  "h": 36
+ },
+ "scenery/forest_bush.png": {
+  "category": "scenery",
+  "bytes": 444,
+  "w": 64,
+  "h": 40
+ },
+ "scenery/forest_deciduous_tree.png": {
+  "category": "scenery",
+  "bytes": 2372,
+  "w": 160,
+  "h": 192
+ },
+ "scenery/forest_fern.png": {
+  "category": "scenery",
+  "bytes": 575,
+  "w": 64,
+  "h": 44
+ },
+ "scenery/forest_pine_cluster.png": {
+  "category": "scenery",
+  "bytes": 5660,
+  "w": 224,
+  "h": 240
+ },
+ "scenery/forest_stump.png": {
+  "category": "scenery",
+  "bytes": 283,
+  "w": 40,
+  "h": 36
+ },
+ "scenery/forest_wooden_fence.png": {
+  "category": "scenery",
+  "bytes": 235,
+  "w": 128,
+  "h": 32
+ },
+ "scenery/night_billboard.png": {
+  "category": "scenery",
+  "bytes": 510,
+  "w": 224,
+  "h": 176
+ },
+ "scenery/night_building.png": {
+  "category": "scenery",
+  "bytes": 453,
+  "w": 160,
+  "h": 176
+ },
+ "scenery/night_warehouse.png": {
+  "category": "scenery",
+  "bytes": 309,
+  "w": 192,
+  "h": 96
+ },
+ "scenery/scenery.json": {
+  "category": "scenery",
+  "bytes": 11194
+ },
+ "scenery/scenery_grass_tuft.png": {
+  "category": "scenery",
+  "bytes": 256,
+  "w": 40,
+  "h": 24
+ },
+ "scenery/scenery_guardrail.png": {
+  "category": "scenery",
+  "bytes": 198,
+  "w": 128,
+  "h": 24
+ },
+ "scenery/scenery_log.png": {
+  "category": "scenery",
+  "bytes": 450,
+  "w": 104,
+  "h": 34
+ },
+ "scenery/scenery_mountain_far.png": {
+  "category": "scenery",
+  "bytes": 10103,
+  "w": 960,
+  "h": 200
+ },
+ "scenery/scenery_mountain_near.png": {
+  "category": "scenery",
+  "bytes": 17347,
+  "w": 960,
+  "h": 240
+ },
+ "scenery/scenery_pine_tree.png": {
+  "category": "scenery",
+  "bytes": 1972,
+  "w": 112,
+  "h": 240
+ },
+ "scenery/scenery_pine_tree_small.png": {
+  "category": "scenery",
+  "bytes": 835,
+  "w": 64,
+  "h": 112
+ },
+ "scenery/scenery_road_sign.png": {
+  "category": "scenery",
+  "bytes": 307,
+  "w": 80,
+  "h": 80
+ },
+ "scenery/scenery_rock_large.png": {
+  "category": "scenery",
+  "bytes": 1437,
+  "w": 176,
+  "h": 120
+ },
+ "scenery/scenery_rock_small.png": {
+  "category": "scenery",
+  "bytes": 284,
+  "w": 48,
+  "h": 32
+ },
+ "scenery/scenery_tunnel.png": {
+  "category": "scenery",
+  "bytes": 6308,
+  "w": 352,
+  "h": 240
+ },
+ "scenery/scenery_wildflowers.png": {
+  "category": "scenery",
+  "bytes": 409,
+  "w": 56,
+  "h": 30
+ },
+ "scenery/sky.json": {
+  "category": "scenery",
+  "bytes": 1046
+ },
+ "scenery/sky_day.png": {
+  "category": "scenery",
+  "bytes": 18267,
+  "w": 960,
+  "h": 540
+ },
+ "scenery/sky_day_layer_far.png": {
+  "category": "scenery",
+  "bytes": 11853,
+  "w": 960,
+  "h": 540
+ },
+ "scenery/sky_day_layer_near.png": {
+  "category": "scenery",
+  "bytes": 5175,
+  "w": 960,
+  "h": 540
+ },
+ "scenery/sky_day_layer_sky.png": {
+  "category": "scenery",
+  "bytes": 5363,
+  "w": 960,
+  "h": 540
+ },
+ "scenery/sky_night.png": {
+  "category": "scenery",
+  "bytes": 17317,
+  "w": 960,
+  "h": 540
+ },
+ "scenery/sky_night_layer_far.png": {
+  "category": "scenery",
+  "bytes": 11980,
+  "w": 960,
+  "h": 540
+ },
+ "scenery/sky_night_layer_near.png": {
+  "category": "scenery",
+  "bytes": 5138,
+  "w": 960,
+  "h": 540
+ },
+ "scenery/sky_night_layer_sky.png": {
+  "category": "scenery",
+  "bytes": 4124,
+  "w": 960,
+  "h": 540
+ },
+ "scenery/sky_storm.png": {
+  "category": "scenery",
+  "bytes": 23685,
+  "w": 960,
+  "h": 540
+ },
+ "scenery/sky_storm_layer_far.png": {
+  "category": "scenery",
+  "bytes": 3854,
+  "w": 960,
+  "h": 540
+ },
+ "scenery/sky_storm_layer_near.png": {
+  "category": "scenery",
+  "bytes": 2935,
+  "w": 960,
+  "h": 540
+ },
+ "scenery/sky_storm_layer_sky.png": {
+  "category": "scenery",
+  "bytes": 22370,
+  "w": 960,
+  "h": 540
+ },
+ "scenery/sky_sunset.png": {
+  "category": "scenery",
+  "bytes": 17877,
+  "w": 960,
+  "h": 540
+ },
+ "scenery/sky_sunset_layer_far.png": {
+  "category": "scenery",
+  "bytes": 12329,
+  "w": 960,
+  "h": 540
+ },
+ "scenery/sky_sunset_layer_near.png": {
+  "category": "scenery",
+  "bytes": 5077,
+  "w": 960,
+  "h": 540
+ },
+ "scenery/sky_sunset_layer_sky.png": {
+  "category": "scenery",
+  "bytes": 5612,
+  "w": 960,
+  "h": 540
+ },
+ "scenery/synth_billboard.png": {
+  "category": "scenery",
+  "bytes": 518,
+  "w": 224,
+  "h": 176
+ },
+ "scenery/synth_crystals.png": {
+  "category": "scenery",
+  "bytes": 280,
+  "w": 64,
+  "h": 56
+ },
+ "scenery/synth_layer_sky.png": {
+  "category": "scenery",
+  "bytes": 3164,
+  "w": 960,
+  "h": 540
+ },
+ "scenery/synth_palm.png": {
+  "category": "scenery",
+  "bytes": 2504,
+  "w": 192,
+  "h": 224
+ },
+ "scenery/synth_pylon_cyan.png": {
+  "category": "scenery",
+  "bytes": 330,
+  "w": 112,
+  "h": 192
+ },
+ "scenery/synth_pylon_pink.png": {
+  "category": "scenery",
+  "bytes": 330,
+  "w": 112,
+  "h": 192
+ },
+ "scenery/synth_skyline.png": {
+  "category": "scenery",
+  "bytes": 3403,
+  "w": 960,
+  "h": 160
+ },
+ "scenery/synth_tower_cyan.png": {
+  "category": "scenery",
+  "bytes": 770,
+  "w": 160,
+  "h": 288
+ },
+ "scenery/synth_tower_pink.png": {
+  "category": "scenery",
+  "bytes": 814,
+  "w": 160,
+  "h": 288
+ },
+ "scenery/synth_wire_peaks.png": {
+  "category": "scenery",
+  "bytes": 3170,
+  "w": 960,
+  "h": 120
+ },
+ "traffic/traffic.json": {
+  "category": "traffic",
+  "bytes": 5747
+ },
+ "traffic/traffic_bus.png": {
+  "category": "traffic",
+  "bytes": 1376,
+  "w": 192,
+  "h": 128
+ },
+ "traffic/traffic_bus_back.png": {
+  "category": "traffic",
+  "bytes": 626,
+  "w": 174,
+  "h": 255
+ },
+ "traffic/traffic_bus_front.png": {
+  "category": "traffic",
+  "bytes": 1525,
+  "w": 192,
+  "h": 128
+ },
+ "traffic/traffic_delivery_van.png": {
+  "category": "traffic",
+  "bytes": 1097,
+  "w": 192,
+  "h": 128
+ },
+ "traffic/traffic_delivery_van_back.png": {
+  "category": "traffic",
+  "bytes": 783,
+  "w": 154,
+  "h": 190
+ },
+ "traffic/traffic_delivery_van_front.png": {
+  "category": "traffic",
+  "bytes": 1148,
+  "w": 192,
+  "h": 128
+ },
+ "traffic/traffic_sedan.png": {
+  "category": "traffic",
+  "bytes": 1362,
+  "w": 192,
+  "h": 128
+ },
+ "traffic/traffic_sedan_back.png": {
+  "category": "traffic",
+  "bytes": 570,
+  "w": 138,
+  "h": 105
+ },
+ "traffic/traffic_sedan_front.png": {
+  "category": "traffic",
+  "bytes": 1397,
+  "w": 192,
+  "h": 128
+ },
+ "traffic/traffic_semi_truck.png": {
+  "category": "traffic",
+  "bytes": 1181,
+  "w": 192,
+  "h": 128
+ },
+ "traffic/traffic_semi_truck_back.png": {
+  "category": "traffic",
+  "bytes": 1380,
+  "w": 177,
+  "h": 294
+ },
+ "traffic/traffic_semi_truck_front.png": {
+  "category": "traffic",
+  "bytes": 1275,
+  "w": 192,
+  "h": 128
+ },
+ "traffic/traffic_sports_car.png": {
+  "category": "traffic",
+  "bytes": 1292,
+  "w": 192,
+  "h": 128
+ },
+ "traffic/traffic_sports_car_back.png": {
+  "category": "traffic",
+  "bytes": 533,
+  "w": 131,
+  "h": 90
+ },
+ "traffic/traffic_sports_car_front.png": {
+  "category": "traffic",
+  "bytes": 1286,
+  "w": 192,
+  "h": 128
+ },
+ "traffic/traffic_station_wagon.png": {
+  "category": "traffic",
+  "bytes": 1570,
+  "w": 192,
+  "h": 128
+ },
+ "traffic/traffic_station_wagon_back.png": {
+  "category": "traffic",
+  "bytes": 593,
+  "w": 128,
+  "h": 116
+ },
+ "traffic/traffic_station_wagon_front.png": {
+  "category": "traffic",
+  "bytes": 1574,
+  "w": 192,
+  "h": 128
+ },
+ "UI/ui.json": {
+  "category": "UI",
+  "bytes": 3892
+ },
+ "UI/ui_brake.png": {
+  "category": "UI",
+  "bytes": 414,
+  "w": 32,
+  "h": 32
+ },
+ "UI/ui_button_disabled.png": {
+  "category": "UI",
+  "bytes": 393,
+  "w": 240,
+  "h": 48
+ },
+ "UI/ui_button_normal.png": {
+  "category": "UI",
+  "bytes": 346,
+  "w": 240,
+  "h": 48
+ },
+ "UI/ui_button_selected.png": {
+  "category": "UI",
+  "bytes": 413,
+  "w": 240,
+  "h": 48
+ },
+ "UI/ui_checkpoint.png": {
+  "category": "UI",
+  "bytes": 276,
+  "w": 32,
+  "h": 32
+ },
+ "UI/ui_coin.png": {
+  "category": "UI",
+  "bytes": 354,
+  "w": 32,
+  "h": 32
+ },
+ "UI/ui_damage.png": {
+  "category": "UI",
+  "bytes": 329,
+  "w": 32,
+  "h": 32
+ },
+ "UI/ui_engine.png": {
+  "category": "UI",
+  "bytes": 292,
+  "w": 32,
+  "h": 32
+ },
+ "UI/ui_fuel.png": {
+  "category": "UI",
+  "bytes": 289,
+  "w": 32,
+  "h": 32
+ },
+ "UI/ui_panel.png": {
+  "category": "UI",
+  "bytes": 1753,
+  "w": 480,
+  "h": 320
+ },
+ "UI/ui_panel_header.png": {
+  "category": "UI",
+  "bytes": 734,
+  "w": 480,
+  "h": 40
+ },
+ "UI/ui_police_alert.png": {
+  "category": "UI",
+  "bytes": 333,
+  "w": 32,
+  "h": 32
+ },
+ "UI/ui_repair.png": {
+  "category": "UI",
+  "bytes": 231,
+  "w": 32,
+  "h": 32
+ },
+ "UI/ui_speed.png": {
+  "category": "UI",
+  "bytes": 365,
+  "w": 32,
+  "h": 32
+ },
+ "UI/ui_tire.png": {
+  "category": "UI",
+  "bytes": 391,
+  "w": 32,
+  "h": 32
+ },
+ "UI/ui_transmission.png": {
+  "category": "UI",
+  "bytes": 334,
+  "w": 32,
+  "h": 32
+ },
+ "UI/ui_trophy.png": {
+  "category": "UI",
+  "bytes": 286,
+  "w": 32,
+  "h": 32
+ },
+ "vehicles/car_apex_xr.png": {
+  "category": "vehicles",
+  "bytes": 1958,
+  "w": 256,
+  "h": 128
+ },
+ "vehicles/car_damage_heavy.png": {
+  "category": "vehicles",
+  "bytes": 2262,
+  "w": 256,
+  "h": 128
+ },
+ "vehicles/car_damage_light.png": {
+  "category": "vehicles",
+  "bytes": 1891,
+  "w": 256,
+  "h": 128
+ },
+ "vehicles/car_damage_medium.png": {
+  "category": "vehicles",
+  "bytes": 2026,
+  "w": 256,
+  "h": 128
+ },
+ "vehicles/car_night_hawk.png": {
+  "category": "vehicles",
+  "bytes": 1454,
+  "w": 256,
+  "h": 128
+ },
+ "vehicles/car_phantom_x.png": {
+  "category": "vehicles",
+  "bytes": 1920,
+  "w": 256,
+  "h": 128
+ },
+ "vehicles/car_silverline_turbo.png": {
+  "category": "vehicles",
+  "bytes": 1420,
+  "w": 256,
+  "h": 128
+ },
+ "vehicles/car_thunder_v8.png": {
+  "category": "vehicles",
+  "bytes": 1718,
+  "w": 256,
+  "h": 128
+ },
+ "vehicles/car_vortex_gt.png": {
+  "category": "vehicles",
+  "bytes": 1733,
+  "w": 256,
+  "h": 128
+ }
+}

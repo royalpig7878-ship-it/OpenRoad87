@@ -12,7 +12,7 @@ src/
   systems/ vehicles/ road/ traffic/ police/ UI/ controls/ audio/ career/ economy/ save/ data/
                    (empty, reserved for later milestones)
 public/assets/     runtime assets: vehicles cockpits roads scenery traffic police UI menus effects audio
-docs/              design + process docs
+notes/              design + process docs
 ```
 Root also holds the **art workshop** (`*.px.js`, `export*.mjs`, `final/`, `out/`) which generates pixel art with the external `claude-pxl` tool (imported from `C:/Users/Owner/claude-pxl`). It is source material, not part of the game build; finished PNGs are copied into `public/assets/`.
 

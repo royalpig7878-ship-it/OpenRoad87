@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc --noEmit && vite build",
+    "build:pages": "tsc --noEmit && vite build --outDir docs --emptyOutDir",
     "preview": "vite preview --host",
     "typecheck": "tsc --noEmit",
     "assets:verify": "node scripts/verify-assets.mjs",
