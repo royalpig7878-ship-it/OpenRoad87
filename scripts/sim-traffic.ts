@@ -249,7 +249,7 @@ console.log('--- rear mirror feed ---');
   const c = m.cars[0];
   c.active = true; c.type = TRAFFIC_TYPES[1]; c.z = 5000; c.x = c.targetX = 0.2; c.speedKph = 100; c.cruiseKph = 100;
   const rc = m.rearCars({ position: 7000, playerX: 0, speedKph: 100 });
-  check('cars behind the player appear in the mirror feed', rc.length === 1 && Math.abs(rc[0].distance - 2000) < 1, JSON.stringify(rc));
+  check('cars behind the player appear in the mirror feed (gap to their front)', rc.length === 1 && Math.abs(rc[0].distance - (2000 - (TRAFFIC_TYPES[1].lengthM * UNITS_PER_METRE) / 2)) < 1, JSON.stringify(rc));
   check('cars ahead are not in the mirror feed', m.rearCars({ position: 3000, playerX: 0, speedKph: 100 }).length === 0);
 }
 
@@ -276,5 +276,32 @@ console.log('--- car beside you (blind spot lamp) ---');
   check('a car in your own lane does not light either side', !m.carBeside(p, -1) && !m.carBeside(p, 1));
 }
 
+
+console.log('--- the mirror and the hit test agree (passing long vehicles) ---');
+for (const typeId of ['sedan', 'semi_truck', 'bus']) {
+  const type = TRAFFIC_TYPES.find((t) => t.id === typeId)!;
+  // The mirror reports the gap to the vehicle's front, not its middle.
+  {
+    const m = make(5);
+    const c = m.cars[0];
+    c.active = true; c.type = type; c.x = c.targetX = m.laneX(2); c.speedKph = 90; c.z = 100000 - 12 * UNITS_PER_METRE;
+    const d = m.rearCars({ position: 100000, playerX: m.laneX(1), speedKph: 130 })[0].distance / UNITS_PER_METRE;
+    check(`${type.name}: mirror shows the gap to its front (middle 12 m back)`, Math.abs(d - (12 - type.lengthM / 2)) < 0.01, `(${d.toFixed(1)} m)`);
+  }
+  // Pass it, wait until the mirror shows a 2 m gap, then move into its lane: no crash.
+  const m = new TrafficManager({ trackLength: TRACK, lanes: 3, segmentLength: 200, drawDistance: 300, seed: 3, difficulty: { ...DIFFICULTY.normal, density: 0, laneChangeChance: 0 }, poolSize: 4 });
+  const c = m.cars[0];
+  c.active = true; c.type = type; c.x = c.targetX = m.laneX(2); c.cruiseKph = c.speedKph = 90; c.z = 100000 + 40 * UNITS_PER_METRE;
+  const p: PlayerSample = { position: 100000, playerX: m.laneX(1), speedKph: 130 };
+  let moving = false, hit = false;
+  for (let t = 0; t < 12 && !hit; t += DT) {
+    p.position += p.speedKph * WORLD_UNITS_PER_KPH * DT;
+    const rc = m.rearCars(p)[0];
+    if (!moving && rc && rc.distance >= 2 * UNITS_PER_METRE) moving = true;
+    if (moving) p.playerX = Math.min(m.laneX(2), p.playerX + 0.9 * DT);
+    if (m.update(DT, p).hits.length) hit = true;
+  }
+  check(`${type.name}: after passing, moving over once the mirror shows 2 m is safe`, moving && !hit);
+}
 console.log(failures === 0 ? '\nALL TRAFFIC CHECKS PASSED' : `\n${failures} TRAFFIC CHECK(S) FAILED`);
 process.exit(failures === 0 ? 0 : 1);

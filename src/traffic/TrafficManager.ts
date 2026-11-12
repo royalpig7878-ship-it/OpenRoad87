@@ -426,13 +426,15 @@ export class TrafficManager {
     this.place(car, type, z, lane, speed);
   }
 
-  /** Cars behind the player within mirror range, for the rear-view mirror. */
+  /** Cars behind the player within mirror range, for the rear-view mirror. The distance is from the driver to the car's front. */
   rearCars(player: PlayerSample, range = 6500): { distance: number; x: number; color: number; texture: string; widthM: number }[] {
     const out: { distance: number; x: number; color: number; texture: string; widthM: number }[] = [];
     for (const c of this.cars) {
       if (!c.active) continue;
       const rel = this.rel(c.z, player.position);
-      if (rel < 0 && rel > -range) out.push({ distance: -rel, x: c.x, color: c.type.mirrorColor, texture: c.type.texture.replace('_back', '_front'), widthM: c.type.widthM });
+      // Distance to the car's FRONT (what you see in the mirror), not its middle: a 15 m semi whose middle is 5 m
+      // behind you is still alongside your car.
+      if (rel < 0 && rel > -range) out.push({ distance: Math.max(0, -rel - this.halfLengthUnits(c)), x: c.x, color: c.type.mirrorColor, texture: c.type.texture.replace('_back', '_front'), widthM: c.type.widthM });
     }
     return out;
   }

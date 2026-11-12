@@ -497,7 +497,7 @@ export class PoliceManager {
     for (const u of this.units) {
       if (!u.active) continue;
       const rel = this.rel(u.z, player.position);
-      if (rel < 0 && rel > -range) out.push({ distance: -rel, x: u.x, color: POLICE_TYPE.mirrorColor, lights: u.sirens, texture: 'police_cruiser_front', widthM: POLICE_TYPE.widthM });
+      if (rel < 0 && rel > -range) out.push({ distance: Math.max(0, -rel - (POLICE_TYPE.lengthM * UNITS_PER_METRE) / 2), x: u.x, color: POLICE_TYPE.mirrorColor, lights: u.sirens, texture: 'police_cruiser_front', widthM: POLICE_TYPE.widthM });
     }
     return out;
   }

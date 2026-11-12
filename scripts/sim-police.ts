@@ -1,6 +1,7 @@
 // Headless checks of the police and pursuit system. Run: npm run sim:police (also part of npm run test:sim)
 import { PoliceManager, PoliceEvents } from '../src/police/PoliceManager';
-import { POLICE_LEVELS, SPEED_TOLERANCE } from '../src/police/PoliceData';
+import { POLICE_LEVELS, POLICE_TYPE, SPEED_TOLERANCE } from '../src/police/PoliceData';
+import { UNITS_PER_METRE } from '../src/traffic/TrafficData';
 import { WORLD_UNITS_PER_KPH } from '../src/systems/DrivingModel';
 import { PlayerSample } from '../src/traffic/TrafficManager';
 
@@ -151,7 +152,7 @@ console.log('--- mirror, cooldown, toggle ---');
   const u = m.activeUnits[0];
   u.z = p.position - 3000;
   const rv = m.rearView(p);
-  check('police behind you appear in the mirror with lights flashing', rv.length === 1 && rv[0].lights && Math.abs(rv[0].distance - 3000) < 1);
+  check('police behind you appear in the mirror with lights flashing (gap to the cruiser front)', rv.length === 1 && rv[0].lights && Math.abs(rv[0].distance - (3000 - (POLICE_TYPE.lengthM * UNITS_PER_METRE) / 2)) < 1);
 
   const c = make(2, 19);
   const r = run(c, 90, 330, 0, (_p, t, mm) => { if (t === 0) mm.startPursuit({ position: 1000, playerX: 0, speedKph: 330 }); });
