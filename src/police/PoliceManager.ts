@@ -2,7 +2,7 @@ import { WORLD_UNITS_PER_KPH } from '../systems/DrivingModel';
 import { roadEdges } from '../road/RoadLayout';
 import { Rng } from '../traffic/Rng';
 import { PLAYER_LENGTH_M, UNITS_PER_METRE } from '../traffic/TrafficData';
-import { LATERAL_HIT, LENGTH_HIT, MIRROR_MIN_NOSE, TrafficCar, PlayerSample } from '../traffic/TrafficManager';
+import { LATERAL_HIT, LENGTH_HIT, TrafficCar, PlayerSample } from '../traffic/TrafficManager';
 import { HEAT_LIMIT, POLICE_LEVELS, POLICE_TYPE, PoliceLevel, SPEED_TOLERANCE, getPoliceLevel } from './PoliceData';
 
 export type PursuitState = 'idle' | 'pursuit' | 'busted' | 'escaped';
@@ -595,8 +595,7 @@ export class PoliceManager {
     for (const u of this.units) {
       if (!u.active) continue;
       const rel = this.rel(u.z, player.position);
-      const nose = -rel - (POLICE_TYPE.lengthM * UNITS_PER_METRE) / 2;
-      if (rel < 0 && rel > -range && nose >= MIRROR_MIN_NOSE) out.push({ distance: nose, x: u.x, color: POLICE_TYPE.mirrorColor, lights: u.sirens, texture: 'police_cruiser_front', widthM: POLICE_TYPE.widthM });
+      if (rel < 0 && rel > -range) out.push({ distance: Math.max(0, -rel - (POLICE_TYPE.lengthM * UNITS_PER_METRE) / 2), x: u.x, color: POLICE_TYPE.mirrorColor, lights: u.sirens, texture: 'police_cruiser_front', widthM: POLICE_TYPE.widthM });
     }
     return out;
   }

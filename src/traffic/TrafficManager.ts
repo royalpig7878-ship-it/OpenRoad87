@@ -95,8 +95,19 @@ export const LENGTH_HIT = 0.72;
 export const REAR_HIT = 0.5;
 /** A car behind you brakes for you once you are this far (road half-widths) into its lane, well before it would hit. */
 const YIELD_LATERAL = 0.62;
-/** The rear-view mirror shows a car only once its nose is behind the player's back bumper (world units from the driver). */
+/** The player's back bumper, measured back from the driver (world units). */
 export const MIRROR_MIN_NOSE = (PLAYER_LENGTH_M * UNITS_PER_METRE) / 2;
+
+/**
+ * Turns the cars behind (distance = driver to their nose) into what the rear-view mirror shows. A car whose nose is
+ * still beside you is left out (the blind-spot lamp shows it), so a car in the mirror is really behind you and safe to
+ * pull in front of. Distances are re-measured from your back bumper, so a car right on your tail still fills the mirror.
+ */
+export function forMirror<T extends { distance: number }>(cars: T[]): T[] {
+  const out: T[] = [];
+  for (const c of cars) if (c.distance >= MIRROR_MIN_NOSE) out.push({ ...c, distance: c.distance - MIRROR_MIN_NOSE });
+  return out;
+}
 const NEAR_MISS_LATERAL = 0.56; // passing closer than this without touching counts as a near miss
 const LANE_SPEED = 0.45; // lateral road-widths per second during a lane change
 const DESPAWN_BEHIND = 9000;
@@ -459,10 +470,7 @@ export class TrafficManager {
       const rel = this.rel(c.z, player.position);
       // Distance to the car's FRONT (what you see in the mirror), not its middle: a 15 m semi whose middle is 5 m
       // behind you is still alongside your car.
-      const nose = -rel - this.halfLengthUnits(c);
-      // Only cars whose nose is behind your back bumper. A car beside you used to show here too, so it looked safe
-      // to pull over in front of it; those are shown by the blind-spot lamp instead.
-      if (rel < 0 && rel > -range && nose >= MIRROR_MIN_NOSE) out.push({ distance: nose, x: c.x, color: c.type.mirrorColor, texture: c.type.texture.replace('_back', '_front'), widthM: c.type.widthM });
+      if (rel < 0 && rel > -range) out.push({ distance: Math.max(0, -rel - this.halfLengthUnits(c)), x: c.x, color: c.type.mirrorColor, texture: c.type.texture.replace('_back', '_front'), widthM: c.type.widthM });
     }
     return out;
   }

@@ -1,5 +1,5 @@
 // Headless checks of the traffic system. Run: npm run sim:traffic (also part of npm run test:sim)
-import { TrafficManager, PlayerSample, TrafficCar } from '../src/traffic/TrafficManager';
+import { TrafficManager, PlayerSample, TrafficCar, forMirror } from '../src/traffic/TrafficManager';
 import { DIFFICULTY, TRAFFIC_TYPES, difficultyForLevel, UNITS_PER_METRE, PLAYER_LENGTH_M } from '../src/traffic/TrafficData';
 import { WORLD_UNITS_PER_KPH } from '../src/systems/DrivingModel';
 
@@ -276,9 +276,13 @@ console.log('--- weaving: cutting in ahead of cars behind you ---');
   const pp: PlayerSample = { position: 50000, playerX: mm.laneX(1), speedKph: 100 };
   side.active = true; side.type = TRAFFIC_TYPES[0]; side.x = side.targetX = mm.laneX(0);
   side.z = pp.position - (side.type.lengthM * UNITS_PER_METRE) / 2 - 1 * UNITS_PER_METRE; // nose 1 m behind the driver: beside your back door
-  check('a car beside you is not shown in the rear-view mirror, but lights the blind-spot lamp', mm.rearCars(pp).length === 0 && mm.carBeside(pp, -1));
-  side.z -= 4 * UNITS_PER_METRE; // nose now ~3 m behind your back bumper
-  check('once it drops behind your back bumper it shows in the mirror', mm.rearCars(pp).length === 1);
+  check('a car beside you is not shown in the rear-view mirror, but lights the blind-spot lamp', forMirror(mm.rearCars(pp)).length === 0 && mm.carBeside(pp, -1));
+  side.z -= 1.5 * UNITS_PER_METRE; // nose now ~0.3 m behind your back bumper: right on your tail
+  const tail = forMirror(mm.rearCars(pp));
+  check('a car right on your tail shows in the mirror, as close as it gets (full size)', tail.length === 1 && tail[0].distance < 0.5 * UNITS_PER_METRE, tail.length ? `(${(tail[0].distance / UNITS_PER_METRE).toFixed(1)} m)` : '');
+  side.z -= 10 * UNITS_PER_METRE;
+  const back = forMirror(mm.rearCars(pp));
+  check('further back it shows smaller (distance from your back bumper)', back.length === 1 && Math.abs(back[0].distance / UNITS_PER_METRE - 10.3) < 0.1);
 }
 
 console.log('--- rear mirror feed ---');

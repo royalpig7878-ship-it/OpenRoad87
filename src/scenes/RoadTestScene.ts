@@ -29,7 +29,7 @@ import { addMoney, effectiveSpec, fuelLevel, owns, setDamage, setFuel } from '..
 import { PICKUP_VALUE, PickupKind, PickupManager } from '../pickups/PickupManager';
 import { PickupRenderer } from '../pickups/PickupRenderer';
 import { CockpitView } from '../UI/CockpitView';
-import { TrafficManager } from '../traffic/TrafficManager';
+import { TrafficManager, forMirror } from '../traffic/TrafficManager';
 import { TrafficRenderer, TrafficArtInfo } from '../traffic/TrafficRenderer';
 import { DIFFICULTY, DifficultyName, UNITS_PER_METRE } from '../traffic/TrafficData';
 import { audio } from '../audio/AudioManager';
@@ -757,8 +757,7 @@ export class RoadTestScene extends Phaser.Scene {
       curveBehind: behind.curve,
       side: this.trafficOn ? { left: this.traffic.carBeside(player, -1), right: this.traffic.carBeside(player, 1) } : { left: false, right: false },
       rearCars: [
-        ...(this.trafficOn ? this.traffic.rearCars(player) : []),
-        ...this.police.rearView(player),
+        ...forMirror([...(this.trafficOn ? this.traffic.rearCars(player) : []), ...this.police.rearView(player)]),
         ...(this.rearDemo ? [{ distance: this.rearDist, x: 0.1, color: 0x2a3a8a, lights: true }] : []),
       ],
     });
