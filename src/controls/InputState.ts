@@ -12,11 +12,9 @@ export interface InputState {
   gearDown: boolean;
   /** True for the single frame pause was requested. */
   pause: boolean;
-  /** True for the single frame a switch between automatic and manual transmission was requested (touch button). */
-  toggleTransmission: boolean;
 }
 
-export const emptyInput = (): InputState => ({ throttle: 0, brake: 0, steer: 0, gearUp: false, gearDown: false, pause: false, toggleTransmission: false });
+export const emptyInput = (): InputState => ({ throttle: 0, brake: 0, steer: 0, gearUp: false, gearDown: false, pause: false });
 
 /** Anything that can supply input. Touch controls (Milestone 12) implement this too. */
 export interface InputSource {

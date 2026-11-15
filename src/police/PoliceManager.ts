@@ -2,7 +2,7 @@ import { WORLD_UNITS_PER_KPH } from '../systems/DrivingModel';
 import { roadEdges } from '../road/RoadLayout';
 import { Rng } from '../traffic/Rng';
 import { PLAYER_LENGTH_M, UNITS_PER_METRE } from '../traffic/TrafficData';
-import { TrafficCar, PlayerSample } from '../traffic/TrafficManager';
+import { LATERAL_HIT, LENGTH_HIT, MIRROR_MIN_NOSE, TrafficCar, PlayerSample } from '../traffic/TrafficManager';
 import { HEAT_LIMIT, POLICE_LEVELS, POLICE_TYPE, PoliceLevel, SPEED_TOLERANCE, getPoliceLevel } from './PoliceData';
 
 export type PursuitState = 'idle' | 'pursuit' | 'busted' | 'escaped';
@@ -71,7 +71,6 @@ export interface PoliceOptions {
   obstacles?: () => TrafficCar[];
 }
 
-const LATERAL_HIT = 0.34;
 const LANE_RATE = 0.8; // road widths per second (police change lanes faster than traffic)
 const ESCAPE_DISTANCE = 16000;
 const EVADE_NEEDED = 7; // seconds out of reach to escape
@@ -278,8 +277,8 @@ export class PoliceManager {
       const rel = this.rel(u.z, player.position);
       u.hitCooldown = Math.max(0, u.hitCooldown - dt);
       const dx = u.x - player.playerX;
-      const half = (this.half(u) + (PLAYER_LENGTH_M * UNITS_PER_METRE) / 2) * 0.85;
-      if (u.hitCooldown <= 0 && Math.abs(rel) < half && Math.abs(dx) < LATERAL_HIT + 0.05) {
+      const half = (this.half(u) + (PLAYER_LENGTH_M * UNITS_PER_METRE) / 2) * LENGTH_HIT; // cruisers chasing you are meant to ram, so no shorter zone behind
+      if (u.hitCooldown <= 0 && Math.abs(rel) < half && Math.abs(dx) < LATERAL_HIT + 0.04) {
         const closing = player.speedKph - u.speedKph;
         const rearEnd = rel > 0;
         const side: -1 | 1 = dx < 0 ? -1 : 1;
@@ -596,7 +595,8 @@ export class PoliceManager {
     for (const u of this.units) {
       if (!u.active) continue;
       const rel = this.rel(u.z, player.position);
-      if (rel < 0 && rel > -range) out.push({ distance: Math.max(0, -rel - (POLICE_TYPE.lengthM * UNITS_PER_METRE) / 2), x: u.x, color: POLICE_TYPE.mirrorColor, lights: u.sirens, texture: 'police_cruiser_front', widthM: POLICE_TYPE.widthM });
+      const nose = -rel - (POLICE_TYPE.lengthM * UNITS_PER_METRE) / 2;
+      if (rel < 0 && rel > -range && nose >= MIRROR_MIN_NOSE) out.push({ distance: nose, x: u.x, color: POLICE_TYPE.mirrorColor, lights: u.sirens, texture: 'police_cruiser_front', widthM: POLICE_TYPE.widthM });
     }
     return out;
   }

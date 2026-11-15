@@ -188,6 +188,8 @@ export class RoadTestScene extends Phaser.Scene {
     this.pursuitHud = new PursuitHud(this);
     const car = this.playerCar(this.vehicleId);
     this.model = new DrivingModel(car.spec, roadEdges(this.cfg.lanes), 1, car.fuel, car.damage);
+    // Automatic or manual is a Settings choice (there is no switch while driving).
+    this.model.transmission.mode = getSettings().transmission;
     // The tank carries over from the last drive: warn when it is low.
     const startFuel = car.fuel / car.spec.fuelCapacity;
     if (startFuel < 0.2) this.time.delayedCall(1800, () => this.showPopup(startFuel < 0.01 ? 'TANK EMPTY - GAS UP IN THE GARAGE' : 'LOW FUEL - GAS UP IN THE GARAGE', '#ff9a4a'));
@@ -594,7 +596,6 @@ export class RoadTestScene extends Phaser.Scene {
     if (this.quality.update(dt, this.game.loop.actualFps)) this.applyQuality();
     const input = this.drive.poll();
     if (this.autoThrottle) input.throttle = 1;
-    if (input.toggleTransmission) this.model.transmission.toggleMode();
     if (input.pause) {
       if (this.arcade) this.togglePause();
       else {

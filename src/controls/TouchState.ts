@@ -13,13 +13,15 @@ export class TouchState {
   mode: SteerMode;
   /** Called when the steering-mode toggle is tapped. */
   onToggleMode?: () => void;
+  /** Manual gearbox: the gear buttons exist (set each frame by the drive scene). */
+  manual = false;
 
   private owners = new Map<number, ControlId>();
   private throttle = 0;
   private brake = 0;
   private wheelSteer = 0;
   private wheelOwner: { id: number; startAngle: number; startSteer: number } | null = null;
-  private pulses = { gearUp: false, gearDown: false, pause: false, manual: false };
+  private pulses = { gearUp: false, gearDown: false, pause: false };
 
   constructor(mode: SteerMode = 'buttons') {
     this.mode = mode;
@@ -47,12 +49,11 @@ export class TouchState {
   }
 
   down(id: number, x: number, y: number): ControlId | null {
-    const c = hitControl(x, y, this.mode);
+    const c = hitControl(x, y, this.mode, this.manual);
     if (!c) return null;
     if (c === 'gearUp') this.pulses.gearUp = true;
     else if (c === 'gearDown') this.pulses.gearDown = true;
     else if (c === 'pause') this.pulses.pause = true;
-    else if (c === 'manual') this.pulses.manual = true;
     else if (c === 'steerMode') {
       this.onToggleMode?.();
       return c;
@@ -98,7 +99,7 @@ export class TouchState {
     }
   }
 
-  /** Current input. One-shot buttons (gears, pause, auto/manual) report once per press. */
+  /** Current input. One-shot buttons (gears, pause) report once per press. */
   poll(): InputState {
     const s = emptyInput();
     s.throttle = this.throttle;
@@ -107,8 +108,7 @@ export class TouchState {
     s.gearUp = this.pulses.gearUp;
     s.gearDown = this.pulses.gearDown;
     s.pause = this.pulses.pause;
-    s.toggleTransmission = this.pulses.manual;
-    this.pulses = { gearUp: false, gearDown: false, pause: false, manual: false };
+    this.pulses = { gearUp: false, gearDown: false, pause: false };
     return s;
   }
 }

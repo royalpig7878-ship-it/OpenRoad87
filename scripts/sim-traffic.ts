@@ -1,6 +1,6 @@
 // Headless checks of the traffic system. Run: npm run sim:traffic (also part of npm run test:sim)
 import { TrafficManager, PlayerSample, TrafficCar } from '../src/traffic/TrafficManager';
-import { DIFFICULTY, TRAFFIC_TYPES, difficultyForLevel, UNITS_PER_METRE } from '../src/traffic/TrafficData';
+import { DIFFICULTY, TRAFFIC_TYPES, difficultyForLevel, UNITS_PER_METRE, PLAYER_LENGTH_M } from '../src/traffic/TrafficData';
 import { WORLD_UNITS_PER_KPH } from '../src/systems/DrivingModel';
 
 const TRACK = 1002 * 200;
@@ -241,6 +241,44 @@ console.log('--- determinism ---');
   };
   check('same seed gives identical traffic', snap(11) === snap(11));
   check('different seeds differ', snap(11) !== snap(12));
+}
+
+console.log('--- weaving: cutting in ahead of cars behind you ---');
+{
+  // Player at 100 km/h in the middle lane; a car in the left lane behind, its nose `noseGapM` behind your rear bumper.
+  // The player swerves into that lane (about 0.6 s per lane). Returns the number of crashes.
+  const cutIn = (noseGapM: number, carKph: number, typeIdx = 0) => {
+    const m = make(21, { ...DIFFICULTY.easy, density: 0.01 });
+    m.cars.forEach((c) => (c.active = false));
+    const car = m.cars[0];
+    const p: PlayerSample = { position: 50000, playerX: m.laneX(1), speedKph: 100 };
+    car.active = true; car.type = TRAFFIC_TYPES[typeIdx]; car.x = car.targetX = m.laneX(0);
+    car.z = p.position - (PLAYER_LENGTH_M * UNITS_PER_METRE) / 2 - noseGapM * UNITS_PER_METRE - (car.type.lengthM * UNITS_PER_METRE) / 2;
+    car.speedKph = car.cruiseKph = carKph; car.laneCooldown = 999; car.prevRel = m.rel(car.z, p.position);
+    let hits = 0;
+    for (let t = 0; t < 4; t += DT) {
+      p.position += p.speedKph * WORLD_UNITS_PER_KPH * DT;
+      p.playerX = Math.max(m.laneX(0), p.playerX - 1.1 * DT);
+      hits += m.update(DT, p).hits.length;
+      m.cars.forEach((c) => { if (c !== car) c.active = false; });
+    }
+    return hits;
+  };
+  check('cutting in a few metres ahead of a same-speed car in the mirror is not a crash', cutIn(3, 100) === 0);
+  check('cutting in ahead of a faster car in the mirror: it brakes for you', cutIn(6, 140) === 0 && cutIn(2, 130) === 0);
+  check('even a semi in the mirror lets you in', cutIn(3, 120, TRAFFIC_TYPES.findIndex((ty) => ty.name === 'Semi Truck')) === 0);
+  check('a car just level with your back bumper does not count: you can pull in ahead of it', cutIn(-1, 100) === 0);
+  check('swerving into a car right beside you is still a crash', cutIn(-3, 100) > 0);
+  // The mirror only shows cars that are really behind you; a car beside you lights the blind-spot lamp instead.
+  const mm = make(22, { ...DIFFICULTY.easy, density: 0.01 });
+  mm.cars.forEach((c) => (c.active = false));
+  const side = mm.cars[0];
+  const pp: PlayerSample = { position: 50000, playerX: mm.laneX(1), speedKph: 100 };
+  side.active = true; side.type = TRAFFIC_TYPES[0]; side.x = side.targetX = mm.laneX(0);
+  side.z = pp.position - (side.type.lengthM * UNITS_PER_METRE) / 2 - 1 * UNITS_PER_METRE; // nose 1 m behind the driver: beside your back door
+  check('a car beside you is not shown in the rear-view mirror, but lights the blind-spot lamp', mm.rearCars(pp).length === 0 && mm.carBeside(pp, -1));
+  side.z -= 4 * UNITS_PER_METRE; // nose now ~3 m behind your back bumper
+  check('once it drops behind your back bumper it shows in the mirror', mm.rearCars(pp).length === 1);
 }
 
 console.log('--- rear mirror feed ---');

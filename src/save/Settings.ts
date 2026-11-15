@@ -15,9 +15,11 @@ export interface GameSettings {
   muted: boolean;
   /** Screen scaling: 'even' keeps game pixels the same size at fractional scales (sharp bilinear); 'original' is plain nearest-neighbour. */
   pixelScaling: 'even' | 'original';
+  /** Gearbox: automatic, or manual (shift buttons/keys). Only chosen here, not while driving. */
+  transmission: 'auto' | 'manual';
 }
 
-export const DEFAULT_SETTINGS: GameSettings = { steerMode: 'buttons', touchControls: 'auto', touchOpacity: 0.5, quality: 'auto', masterVolume: 0.8, musicVolume: 0.6, sfxVolume: 0.9, muted: false, pixelScaling: 'even' };
+export const DEFAULT_SETTINGS: GameSettings = { steerMode: 'buttons', touchControls: 'auto', touchOpacity: 0.5, quality: 'auto', masterVolume: 0.8, musicVolume: 0.6, sfxVolume: 0.9, muted: false, pixelScaling: 'even', transmission: 'auto' };
 
 /** Reads settings defensively: anything missing or invalid falls back to its default. */
 export function parseSettings(text: string | null | undefined): GameSettings {
@@ -41,6 +43,7 @@ export function parseSettings(text: string | null | undefined): GameSettings {
   out.sfxVolume = vol(r.sfxVolume, out.sfxVolume);
   if (typeof r.muted === 'boolean') out.muted = r.muted;
   if (r.pixelScaling === 'even' || r.pixelScaling === 'original') out.pixelScaling = r.pixelScaling;
+  if (r.transmission === 'auto' || r.transmission === 'manual') out.transmission = r.transmission;
   return out;
 }
 

@@ -1,6 +1,6 @@
 // Headless checks of touch controls (multitouch state machine, layout), adaptive quality and settings.
 import { TouchState } from '../src/controls/TouchState';
-import { TOUCH_RECTS, WHEEL, WHEEL_LOCK_DEGREES, hitControl, inRect, pedalValue, angleDelta, Rect } from '../src/controls/TouchLayout';
+import { PAUSE_PAD, TOUCH_RECTS, WHEEL, WHEEL_LOCK_DEGREES, hitControl, inRect, pedalValue, angleDelta, Rect } from '../src/controls/TouchLayout';
 import { QUALITY, QualityManager } from '../src/systems/QualityManager';
 import { DEFAULT_SETTINGS, parseSettings } from '../src/save/Settings';
 import { InputManager } from '../src/controls/InputManager';
@@ -27,11 +27,14 @@ console.log('--- layout ---');
   check('the virtual wheel does not overlap other controls and fits on screen', ids.filter((id) => id !== 'left' && id !== 'right').every((id) => !overlap(TOUCH_RECTS[id], wheelBox) || id === 'steerMode' ? true : true) && wheelBox.x >= 0 && wheelBox.y + wheelBox.h <= 540);
   check('wheel hit area clear of the steering toggle', Math.hypot(centre(TOUCH_RECTS.steerMode)[0] - WHEEL.cx, centre(TOUCH_RECTS.steerMode)[1] - WHEEL.cy) > WHEEL.r);
   check('driving controls are big enough for thumbs (>= 100 x 100 game px)', (['accel', 'brake', 'left', 'right'] as const).every((id) => TOUCH_RECTS[id].w >= 100 && TOUCH_RECTS[id].h >= 100), `(smallest ${Math.min(...(['accel', 'brake', 'left', 'right'] as const).map((id) => Math.min(TOUCH_RECTS[id].w, TOUCH_RECTS[id].h)))} px)`);
-  check('small buttons are at least 28 px tall and 60 px wide', (['gearUp', 'gearDown', 'manual', 'pause', 'steerMode'] as const).every((id) => TOUCH_RECTS[id].h >= 28 && TOUCH_RECTS[id].w >= 60));
+  check('small buttons are at least 28 px tall and 60 px wide', (['gearUp', 'gearDown', 'pause', 'steerMode'] as const).every((id) => TOUCH_RECTS[id].h >= 28 && TOUCH_RECTS[id].w >= 60));
   check('pedals are on the right (gas outermost), steering on the left', TOUCH_RECTS.accel.x > TOUCH_RECTS.brake.x && TOUCH_RECTS.left.x < 480 && TOUCH_RECTS.right.x < 480);
-  check('hit testing finds each control by its centre', (['accel', 'brake', 'left', 'right', 'gearUp', 'gearDown', 'manual', 'pause', 'steerMode'] as const).every((id) => hitControl(...centre(TOUCH_RECTS[id]), 'buttons') === (id === 'left' || id === 'right' || id === 'steerMode' || true ? id : null)) || true);
+  check('hit testing finds each control by its centre', (['accel', 'brake', 'left', 'right', 'gearUp', 'gearDown', 'pause', 'steerMode'] as const).every((id) => hitControl(...centre(TOUCH_RECTS[id]), 'buttons') === (id === 'left' || id === 'right' || id === 'steerMode' || true ? id : null)) || true);
   check('the steering buttons do not exist in wheel mode and vice versa', hitControl(...centre(TOUCH_RECTS.left), 'wheel') === 'wheel' && hitControl(...centre(TOUCH_RECTS.right), 'wheel') === 'wheel' && hitControl(...centre(TOUCH_RECTS.left), 'buttons') === 'left' && hitControl(WHEEL.cx + WHEEL.r - 2, WHEEL.cy, 'buttons') !== 'wheel' && hitControl(WHEEL.cx, WHEEL.cy, 'wheel') === 'wheel');
   check('an empty spot hits nothing', hitControl(480, 200, 'buttons') === null);
+  const P = TOUCH_RECTS.pause;
+  check('the pause button is big (>= 80 x 44) with extra reach around it', P.w >= 80 && P.h >= 44 && hitControl(P.x - PAUSE_PAD + 2, P.y + P.h + PAUSE_PAD - 2, 'buttons') === 'pause');
+  check('shift buttons sit side by side on the left', TOUCH_RECTS.gearDown.x < TOUCH_RECTS.gearUp.x && TOUCH_RECTS.gearUp.x + TOUCH_RECTS.gearUp.w < 480 && TOUCH_RECTS.gearDown.y === TOUCH_RECTS.gearUp.y);
 }
 
 console.log('--- pedals ---');
@@ -79,6 +82,7 @@ console.log('--- multitouch ---');
 console.log('--- one-shot buttons ---');
 {
   const t = new TouchState('buttons');
+  t.manual = true;
   t.down(1, ...centre(TOUCH_RECTS.gearUp));
   const a = t.poll(), b = t.poll();
   check('gear up reports exactly once per tap', a.gearUp && !b.gearUp);
@@ -87,8 +91,12 @@ console.log('--- one-shot buttons ---');
   check('gear down reports once', t.poll().gearDown && !t.poll().gearDown);
   t.down(3, ...centre(TOUCH_RECTS.pause));
   check('pause reports once', t.poll().pause && !t.poll().pause);
-  t.down(4, ...centre(TOUCH_RECTS.manual));
-  check('auto/manual toggle reports once', t.poll().toggleTransmission && !t.poll().toggleTransmission);
+  const auto = new TouchState('buttons');
+  auto.down(1, ...centre(TOUCH_RECTS.gearUp));
+  auto.down(2, ...centre(TOUCH_RECTS.gearDown));
+  const ap = auto.poll();
+  check('with an automatic gearbox the shift buttons do not exist', !ap.gearUp && !ap.gearDown && auto.active === 0);
+  check('there is no auto/manual button while driving (it is a Settings choice)', !('manual' in TOUCH_RECTS));
   let toggled = 0;
   t.onToggleMode = () => toggled++;
   t.down(5, ...centre(TOUCH_RECTS.steerMode));
@@ -140,8 +148,9 @@ console.log('--- merging with other devices ---');
   t.down(2, ...centre(TOUCH_RECTS.left));
   const s = mgr.poll();
   check('the input manager receives touch throttle and steering', s.throttle > 0.9 && s.steer === -1);
-  t.down(3, ...centre(TOUCH_RECTS.manual));
-  check('and the transmission toggle', mgr.poll().toggleTransmission === true);
+  t.manual = true;
+  t.down(3, ...centre(TOUCH_RECTS.gearUp));
+  check('and the gear buttons', mgr.poll().gearUp === true);
   mgr.destroy();
 }
 

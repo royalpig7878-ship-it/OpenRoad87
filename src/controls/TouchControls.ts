@@ -17,14 +17,13 @@ const LABELS: Record<Exclude<ControlId, 'wheel'>, string> = {
   right: '>',
   gearUp: 'SHIFT +',
   gearDown: 'SHIFT -',
-  manual: 'AUTO',
   pause: 'II',
   steerMode: 'WHEEL',
 };
 
 /**
  * On-screen driving controls for phones and tablets: gas and brake pedals, steering (left/right buttons or a
- * draggable virtual wheel), gear buttons, an auto/manual switch and pause. Multitouch: every finger owns the
+ * draggable virtual wheel), gear buttons (manual gearbox only: auto/manual is chosen in Settings) and pause. Multitouch: every finger owns the
  * control it first touched. Implements InputSource so the driving code treats it like any other device.
  */
 export class TouchControls implements InputSource {
@@ -38,7 +37,7 @@ export class TouchControls implements InputSource {
   private onPointerMove = (p: Phaser.Input.Pointer) => this.visible && this.state.move(p.id, p.x, p.y);
   private onPointerUp = (p: Phaser.Input.Pointer) => this.state.up(p.id);
 
-  constructor(private scene: Phaser.Scene, mode: SteerMode, opacity: number, onModeChange?: (m: SteerMode) => void, private manualLabel = () => 'AUTO') {
+  constructor(private scene: Phaser.Scene, mode: SteerMode, opacity: number, onModeChange?: (m: SteerMode) => void) {
     this.opacity = opacity;
     this.state = new TouchState(mode);
     this.state.onToggleMode = () => {
@@ -51,7 +50,8 @@ export class TouchControls implements InputSource {
     for (const id of Object.keys(LABELS) as (keyof typeof LABELS)[]) {
       const r = TOUCH_RECTS[id];
       const big = id === 'accel' || id === 'brake' || id === 'left' || id === 'right';
-      this.labels.set(id, scene.add.text(r.x + r.w / 2, r.y + r.h / 2, LABELS[id], { fontFamily: FONT, resolution: 2, fontSize: big ? '28px' : '14px', fontStyle: 'bold', color: '#ffffff', stroke: '#000000', strokeThickness: 3 }).setOrigin(0.5).setDepth(102));
+      const mid = id === 'pause' || id === 'gearUp' || id === 'gearDown';
+      this.labels.set(id, scene.add.text(r.x + r.w / 2, r.y + r.h / 2, LABELS[id], { fontFamily: FONT, resolution: 2, fontSize: big ? '28px' : mid ? '20px' : '14px', fontStyle: 'bold', color: '#ffffff', stroke: '#000000', strokeThickness: 3 }).setOrigin(0.5).setDepth(102));
     }
     const input = scene.input;
     input.on('pointerdown', this.onPointerDown);
@@ -79,6 +79,7 @@ export class TouchControls implements InputSource {
 
   /** Per-frame: advance the wheel spring and redraw the controls. */
   update(dt: number, manual: boolean): void {
+    this.state.manual = manual;
     this.state.update(dt);
     if (!this.visible) return;
     const g = this.gfx;
@@ -92,9 +93,10 @@ export class TouchControls implements InputSource {
     };
     box('accel', 0x20a040);
     box('brake', 0xc02a2a);
-    box('gearUp', 0x2a4a90);
-    box('gearDown', 0x2a4a90);
-    box('manual', manual ? 0xb07a10 : 0x3a3a50);
+    if (manual) {
+      box('gearUp', 0x2a4a90);
+      box('gearDown', 0x2a4a90);
+    }
     box('pause', 0x3a3a50);
     box('steerMode', 0x3a3a50);
 
@@ -113,8 +115,9 @@ export class TouchControls implements InputSource {
     this.labels.get('left')!.setVisible(showButtons);
     this.labels.get('right')!.setVisible(showButtons);
     this.labels.get('steerMode')!.setText(showButtons ? 'WHEEL' : 'BUTTONS');
-    this.labels.get('manual')!.setText(manual ? 'MANUAL' : this.manualLabel());
-    for (const id of ['accel', 'brake', 'gearUp', 'gearDown', 'manual', 'pause', 'steerMode'] as const) this.labels.get(id)!.setAlpha(Math.min(1, this.opacity + 0.4));
+    this.labels.get('gearUp')!.setVisible(manual);
+    this.labels.get('gearDown')!.setVisible(manual);
+    for (const id of ['accel', 'brake', 'gearUp', 'gearDown', 'pause', 'steerMode'] as const) this.labels.get(id)!.setAlpha(Math.min(1, this.opacity + 0.4));
     this.labels.get('left')!.setAlpha(Math.min(1, this.opacity + 0.4));
     this.labels.get('right')!.setAlpha(Math.min(1, this.opacity + 0.4));
   }

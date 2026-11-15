@@ -17,8 +17,8 @@ interface Row {
   danger?: boolean;
 }
 
-const ROW_H = 28;
-const TOP = 72;
+const ROW_H = 25;
+const TOP = 64;
 const pct = (v: number) => `${Math.round(v * 100)}%`;
 const cycle = <T,>(list: readonly T[], cur: T, dir: -1 | 1): T => list[(list.indexOf(cur) + dir + list.length) % list.length];
 const stepVol = (v: number, dir: -1 | 1) => Math.min(1, Math.max(0, Math.round((v + dir * 0.1) * 10) / 10));
@@ -86,6 +86,7 @@ export class SettingsScene extends Phaser.Scene {
       adjust: (d) => this.set({ [key]: stepVol(s()[key], d) } as Partial<GameSettings>, 'uiSelect'),
     });
     return [
+      { label: 'TRANSMISSION', value: () => s().transmission.toUpperCase(), adjust: () => this.set({ transmission: s().transmission === 'auto' ? 'manual' : 'auto' }) },
       vol('MASTER VOLUME', 'masterVolume'),
       vol('MUSIC VOLUME', 'musicVolume'),
       vol('EFFECTS VOLUME', 'sfxVolume'),
@@ -108,6 +109,7 @@ export class SettingsScene extends Phaser.Scene {
       { label: 'EXPORT SAVE (COPY)', value: null, act: () => this.exportSave() },
       { label: 'IMPORT SAVE (PASTE)', value: null, act: () => this.importSave() },
       { label: this.confirmReset > 0 ? 'TAP AGAIN TO ERASE PROGRESS' : 'RESET PROGRESS', value: null, danger: true, act: () => this.resetProgress() },
+      { label: '< BACK TO MENU', value: null, act: () => this.back() },
     ];
   }
 
@@ -299,11 +301,11 @@ export class SettingsScene extends Phaser.Scene {
       });
       this.view.add(bg);
       const color = row.danger ? '#ff7a6a' : sel ? Colors.yellow : Colors.white;
-      this.text(196, y + 6, row.label, 16, color);
+      this.text(196, y + 4, row.label, 16, color);
       if (row.value) {
         const v = row.value();
         const adjustable = !!row.adjust;
-        this.text(760, y + 6, adjustable ? `<  ${v}  >` : v, 16, sel ? Colors.cyan : Colors.grey).setOrigin(1, 0);
+        this.text(760, y + 4, adjustable ? `<  ${v}  >` : v, 16, sel ? Colors.cyan : Colors.grey).setOrigin(1, 0);
         if (adjustable) {
           for (const dir of [-1, 1] as const) {
             const hit = this.add.rectangle(dir < 0 ? 560 : 700, y, 80, ROW_H - 3, 0x000000, 0.01).setOrigin(0, 0);
@@ -326,7 +328,10 @@ export class SettingsScene extends Phaser.Scene {
     if (this.toastTime > 0 && this.toast) this.text(480, 486, this.toast, 18, '#60ff90').setOrigin(0.5, 0);
     const hint = this.capturing ? 'PRESS THE NEW KEY  -  ESC CANCELS' : 'UP/DOWN SELECT   LEFT/RIGHT CHANGE   ENTER ACT   ESC BACK   |   TAP ROWS AND < >';
     this.text(480, 512, hint, 12, Colors.grey, false).setOrigin(0.5, 0);
-    const back = this.text(24, 20, '< BACK', 18, Colors.yellow).setOrigin(0, 0.5);
-    back.setInteractive({ useHandCursor: true }).on('pointerdown', () => this.back());
+    // A big BACK button (the old small text in the corner was hard to hit on a phone).
+    const backBg = this.add.rectangle(14, 8, 132, 46, 0x2a2550, 0.95).setOrigin(0, 0).setStrokeStyle(2, 0xffd23f);
+    backBg.setInteractive({ useHandCursor: true }).on('pointerdown', () => this.back());
+    this.view.add(backBg);
+    this.text(80, 31, '< BACK', 20, Colors.yellow).setOrigin(0.5, 0.5);
   }
 }

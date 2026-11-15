@@ -81,7 +81,22 @@ export interface TrafficStats {
   hits: number;
 }
 
-const LATERAL_HIT = 0.34; // |dx| below this (road-half-width units) overlaps the player's body
+/**
+ * |dx| below this (road-half-width units) is a crash. Two 1.8 m cars touch at 0.34, but from the cockpit view
+ * cars you seemed to just miss still counted, so the player's crash box is narrower than the car (about 75%).
+ */
+export const LATERAL_HIT = 0.26;
+/** Share of the two cars' combined half-lengths that counts as a crash front to back (tighter than touching). */
+export const LENGTH_HIT = 0.72;
+/**
+ * Same, for a car BEHIND you: much shorter, so you can cut in just ahead of a car you see in the mirror.
+ * Its nose has to be well up beside your back seat before it counts (about half of the combined length).
+ */
+export const REAR_HIT = 0.5;
+/** A car behind you brakes for you once you are this far (road half-widths) into its lane, well before it would hit. */
+const YIELD_LATERAL = 0.62;
+/** The rear-view mirror shows a car only once its nose is behind the player's back bumper (world units from the driver). */
+export const MIRROR_MIN_NOSE = (PLAYER_LENGTH_M * UNITS_PER_METRE) / 2;
 const NEAR_MISS_LATERAL = 0.56; // passing closer than this without touching counts as a near miss
 const LANE_SPEED = 0.45; // lateral road-widths per second during a lane change
 const DESPAWN_BEHIND = 9000;
@@ -207,14 +222,15 @@ export class TrafficManager {
     const followDist = 1600 + c.speedKph * 30;
     let aheadSpeed = Infinity;
     let aheadDist = Infinity;
-    let aheadHalf = 0;
+    const myHalf = this.halfLengthUnits(c);
     const consider = (z: number, x: number, speed: number, half: number) => {
       if (Math.abs(x - c.x) >= 0.5) return;
       const dz = this.rel(z, c.z); // distance from my centre to theirs
-      if (dz > 0 && dz < followDist + 800 && dz < aheadDist) {
-        aheadDist = dz;
+      // Bumper-to-bumper gap: centre distances let a long semi run into a bus before it ever "saw" it.
+      const gap = dz - myHalf - half;
+      if (dz > 0 && gap < followDist + 800 && gap < aheadDist) {
+        aheadDist = gap;
         aheadSpeed = speed;
-        aheadHalf = half;
       }
     };
     for (const o of this.cars) if (o.active && o !== c) consider(o.z, o.x, o.speedKph, this.halfLengthUnits(o));
@@ -230,10 +246,10 @@ export class TrafficManager {
     }
     target = Math.max(0, target);
     // Emergency braking when very close; and traffic never drives through the car in front.
-    const close = aheadDist < this.halfLengthUnits(c) + aheadHalf + 1500;
+    const close = aheadDist < 1500;
     const rate = target < c.speedKph ? (close ? 90 : 45) : 18;
     c.speedKph += Math.max(-rate * dt, Math.min(rate * dt, target - c.speedKph));
-    if (aheadDist < this.halfLengthUnits(c) + aheadHalf + 400) c.speedKph = Math.min(c.speedKph, aheadSpeed);
+    if (aheadDist < 400) c.speedKph = Math.min(c.speedKph, aheadSpeed);
 
     // Lane changes: only into gaps that are clear ahead and behind (including the player).
     c.laneCooldown -= dt;
@@ -289,8 +305,15 @@ export class TrafficManager {
   private interact(c: TrafficCar, rel: number, player: PlayerSample, events: TrafficEvents): void {
     const dx = c.x - player.playerX;
     const adx = Math.abs(dx);
-    const half = (this.halfLengthUnits(c) + (PLAYER_LENGTH_M * UNITS_PER_METRE) / 2) * 0.85;
+    const reach = this.halfLengthUnits(c) + (PLAYER_LENGTH_M * UNITS_PER_METRE) / 2; // centre distance where bumpers touch
+    const half = reach * (rel > 0 ? LENGTH_HIT : REAR_HIT);
     const closing = player.speedKph - c.speedKph;
+
+    // A faster car behind you yields when you pull in front of it: it brakes to your speed instead of ramming you.
+    // (Behind you, out of sight, so the instant slow-down is not noticeable; it then follows at a distance.)
+    if (rel < 0 && -rel < reach + 6 * UNITS_PER_METRE && adx < YIELD_LATERAL && c.speedKph > player.speedKph) {
+      c.speedKph = Math.max(0, player.speedKph - 3);
+    }
 
     // Collision.
     if (c.hitCooldown <= 0 && Math.abs(rel) < half && adx < LATERAL_HIT + Math.max(0, (c.type.widthM - 1.8) * 0.09)) {
@@ -303,8 +326,10 @@ export class TrafficManager {
       // The car is shoved along and sideways, and brakes if it was hit from behind.
       if (rearEnd) c.speedKph += Math.min(25, Math.max(0, closing) * 0.25);
       else c.speedKph = Math.max(0, Math.min(c.speedKph, player.speedKph * 0.9));
+      // It keeps its own lane and drifts back into it (re-picking a lane here could shove it into an occupied one).
+      const ownLane = this.laneX(this.laneIndex(c.targetX));
       c.x += side * 0.1;
-      c.targetX = this.laneX(this.laneIndex(c.x));
+      c.targetX = ownLane;
       return;
     }
 
@@ -434,7 +459,10 @@ export class TrafficManager {
       const rel = this.rel(c.z, player.position);
       // Distance to the car's FRONT (what you see in the mirror), not its middle: a 15 m semi whose middle is 5 m
       // behind you is still alongside your car.
-      if (rel < 0 && rel > -range) out.push({ distance: Math.max(0, -rel - this.halfLengthUnits(c)), x: c.x, color: c.type.mirrorColor, texture: c.type.texture.replace('_back', '_front'), widthM: c.type.widthM });
+      const nose = -rel - this.halfLengthUnits(c);
+      // Only cars whose nose is behind your back bumper. A car beside you used to show here too, so it looked safe
+      // to pull over in front of it; those are shown by the blind-spot lamp instead.
+      if (rel < 0 && rel > -range && nose >= MIRROR_MIN_NOSE) out.push({ distance: nose, x: c.x, color: c.type.mirrorColor, texture: c.type.texture.replace('_back', '_front'), widthM: c.type.widthM });
     }
     return out;
   }

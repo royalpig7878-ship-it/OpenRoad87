@@ -29,7 +29,6 @@ export class InputManager {
       out.gearUp ||= s.gearUp;
       out.gearDown ||= s.gearDown;
       out.pause ||= s.pause;
-      out.toggleTransmission ||= s.toggleTransmission;
     }
     out.steer = Math.max(-1, Math.min(1, out.steer));
     return out;
